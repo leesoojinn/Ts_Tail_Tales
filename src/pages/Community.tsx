@@ -62,42 +62,9 @@ export default function Community() {
                     if (node.type === "tag" && node.name === "img") {
                       const imgUrl = node.attribs.src; // 이미지 URL 추출
                       return (
-                        // <div key={index} style={{ maxWidth: "100%" }}>
-                        //   <img
-                        //     src={imgUrl}
-                        //     style={{
-                        //       width: "100%",
-                        //       height: "100%",
-                        //       objectFit: "cover", // 이미지 크롭
-                        //     }}
-                        //     alt={`Image ${index}`}
-                        //   />
-                        // </div>
-
-                        // 수진 : 정사각형, 직사각형 사진 크기 조정 때문에 안 예쁘게 나와서 모두
-                        // 사진 크기는 유지하면 정사각형으로 나오게 함.
-                        <div
-                          key={index}
-                          style={{
-                            maxWidth: "100%",
-                            height: 0,
-                            paddingBottom: "100%",
-                            position: "relative",
-                          }}
-                        >
-                          <img
-                            src={imgUrl}
-                            style={{
-                              position: "absolute",
-                              width: "100%",
-                              height: "100%",
-                              top: 0,
-                              left: 0,
-                              objectFit: "cover", // 이미지 크롭
-                            }}
-                            alt={`Image ${index}`}
-                          />
-                        </div>
+                        <ImgContainer key={index}>
+                          <Img src={imgUrl} alt={`Image ${index}`} />
+                        </ImgContainer>
                       );
                     }
                     return undefined;
@@ -139,4 +106,20 @@ const PostContent = styled.p`
   white-space: nowrap;
   width: 250px; /* 원하는 너비 */
   height: 250px; /* 원하는 높이 */
+`;
+
+const ImgContainer = styled.div`
+  max-width: 100%;
+  height: 0;
+  padding-bottom: 100%;
+  position: relative;
+`;
+
+const Img = styled.img`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  object-fit: cover;
 `;
