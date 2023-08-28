@@ -39,6 +39,7 @@ export default function PostDetail() {
 
     return data;
   });
+  console.log("detailpostid", post);
 
   // 댓글 목록 가져오기
   const { data: comments, isLoading: isLoadingComments } = useQuery(
@@ -76,9 +77,7 @@ export default function PostDetail() {
     return null;
   }
 
-  // 사용자 닉네임과 게시물 작성자 닉네임 비교
-  const isUserAuthorized =
-    post.userNickname === sessionStorage.getItem("userNickname");
+  const isUserAuthorized = post.email === sessionStorage.getItem("userEmail");
 
   // 게시물 삭제 함수
   const deletePost = async (postId: number) => {

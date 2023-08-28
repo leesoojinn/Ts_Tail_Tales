@@ -32,6 +32,7 @@ export default function PostEdit() {
       return data;
     }
   );
+  console.log("data", data);
 
   // 게시물 삭제를 처리하는 뮤테이션
   const deletePost = useMutation(
@@ -49,13 +50,30 @@ export default function PostEdit() {
 
   // 게시글 추가를 처리하는 함수
   const handleAddNewPost = async () => {
+    // 사용자 정보 가져오기
+    const storedUser = sessionStorage.getItem("user");
+    if (!storedUser) {
+      console.error("사용자 정보가 없습니다.");
+      return;
+    }
+
+    const user = JSON.parse(storedUser);
+    const userEmail = user?.email;
+
+    if (!userEmail) {
+      console.error("사용자 이메일이 없습니다.");
+      return;
+    }
+
     // 업데이트할 게시물 객체 생성
-    const updatedPost: Post = {
+    const updatedPost: any = {
+      // any 타입으로 변경
       id: data.id,
       title,
       content,
       date: new Date().toISOString(),
       userNickname, // 상태로부터 사용자 닉네임 가져옴
+      email: userEmail, // 사용자 이메일 추가
     };
 
     // 게시물 추가 뮤테이션 실행

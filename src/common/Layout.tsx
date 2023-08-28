@@ -35,6 +35,10 @@ function Layout() {
       setUserNickname(
         user.user_metadata.user_name || user.user_metadata.full_name
       );
+      if (user.email) {
+        sessionStorage.setItem("userEmail", user.email);
+      }
+
       sessionStorage.setItem(
         "userNickname",
         user.user_metadata.user_name || user.user_metadata.full_name

@@ -47,6 +47,21 @@ function Home() {
 
     getUser();
   }, []);
+  // //현재 상태를 유지하는 방법
+  // useEffect(() => {
+  //   data.forEach((item: AnimalShelter) => {
+  //     const localStorageKey = `favorite_${item.ABDM_IDNTFY_NO}`;
+  //     const isFavorite = localStorage.getItem(localStorageKey);
+  //     if (isFavorite !== null) {
+  //       const updatedData = data.map((dataItem: AnimalShelter) =>
+  //         dataItem.ABDM_IDNTFY_NO === item.ABDM_IDNTFY_NO
+  //           ? { ...dataItem, isFavorite: isFavorite === "true" }
+  //           : dataItem
+  //       );
+  //       setData(updatedData);
+  //     }
+  //   });
+  // }, [data]);
 
   useEffect(() => {
     const fetchDataFromApi = async () => {
@@ -75,13 +90,16 @@ function Home() {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
   const nearingDeadline = data.filter((item) => {
     const today = new Date();
     const endOfNotice = new Date(formatDate(item.PBLANC_END_DE));
     const fiveDaysAfter = new Date(today);
-    fiveDaysAfter.setDate(fiveDaysAfter.getDate() + 5);
+    fiveDaysAfter.setDate(fiveDaysAfter.getDate() + 10);
     return endOfNotice <= fiveDaysAfter;
   });
+  // console.log(nearingDeadline);
+
   const filteredItems = data.filter((item) => {
     let matchesDate = true;
     let matchesLocation = true;
@@ -132,8 +150,18 @@ function Home() {
       );
 
       const upsertData = isAlreadyFavorited
-        ? { userId: userId, animalId: item.ABDM_IDNTFY_NO, isFavorite: false }
-        : { userId: userId, animalId: item.ABDM_IDNTFY_NO, isFavorite: true };
+        ? {
+            userId: userId,
+            animalId: item.ABDM_IDNTFY_NO,
+            isFavorite: false,
+            email: user.email,
+          }
+        : {
+            userId: userId,
+            animalId: item.ABDM_IDNTFY_NO,
+            isFavorite: true,
+            email: user.email,
+          };
 
       const { error } = await supabase.from("favorites").upsert(upsertData);
 
@@ -149,6 +177,9 @@ function Home() {
       );
 
       setData(updatedData);
+      //새로고침 로컬에 저장?
+      const localStorageKey = `favorite_${item.ABDM_IDNTFY_NO}`;
+      localStorage.setItem(localStorageKey, upsertData.isFavorite.toString());
     } catch (error) {
       console.error("Error toggling favorite:", error);
     }

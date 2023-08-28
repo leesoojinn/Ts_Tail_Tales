@@ -91,7 +91,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
     return <div>게시물을 찾을 수 없습니다.</div>;
   }
 
-  const userNickname = sessionStorage.getItem("userNickname");
+  const email = sessionStorage.getItem("userEmail")?.toLowerCase();
 
   return (
     <div>
@@ -112,7 +112,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                 })}
               </div>
               <div>댓글: {comment.content}</div>
-              {userNickname === comment.userNickname && (
+              {email === comment.email && (
                 <>
                   {editingCommentId === comment.id ? (
                     <Edit

@@ -63,6 +63,7 @@ export default function PostCreate(data: any) {
           content,
           date: new Date().toISOString(),
           userNickname: userNickname,
+          email: user!.email,
         },
       ]);
 

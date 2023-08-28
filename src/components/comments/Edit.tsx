@@ -10,6 +10,7 @@ interface Comment {
   content: string;
   userNickname: string;
   date: string;
+  email: string;
 }
 
 export default function Edit({
@@ -109,6 +110,7 @@ export default function Edit({
       content,
       userNickname,
       date: new Date().toISOString(),
+      email: initialData!.email,
     };
 
     try {

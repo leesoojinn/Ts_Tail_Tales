@@ -109,6 +109,7 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       content,
       userNickname: userNickname || user?.user_metadata.full_name,
       date: new Date().toISOString().slice(0, 19).replace("T", " "), // 현재 시간을 문자열로 변환
+      email: user!.email,
     };
 
     try {
