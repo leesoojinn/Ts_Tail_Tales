@@ -10,6 +10,8 @@ import Pagination from "../components/Pagination";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { FavoritesProvider } from "../components/FavoritesContext";
 import { supabase } from "../supabase";
+
+// 컴포넌트 나누기 전
 function Home() {
   const navigate = useNavigate();
   const [data, setData] = useState<Array<AnimalShelter>>([]);
