@@ -10,7 +10,6 @@ import Pagination from "../components/Pagination";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { FavoritesProvider } from "../components/FavoritesContext";
 import { supabase } from "../supabase";
-
 function Home() {
   const navigate = useNavigate();
   const [data, setData] = useState<Array<AnimalShelter>>([]);
@@ -29,11 +28,12 @@ function Home() {
     slidesToShow: 3,
     slidesToScroll: 3,
   };
-
-  //로그인 확인용
+  // 로그인 확인용
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // 사용자의 즐겨찾기 데이터를 저장할 상태
+  const [userFavorites, setUserFavorites] = useState<Set<string>>(new Set());
+  console.log("조하요", userFavorites);
 
-  //로그인이 되는 코드
   useEffect(() => {
     const getUser = async () => {
       const {
@@ -42,27 +42,12 @@ function Home() {
       console.log({ user });
       if (user) {
         setIsLoggedIn(true);
+        // 사용자의 즐겨찾기 데이터를 가져옴
+        await getUserFavorites();
       }
     };
-
     getUser();
   }, []);
-  // //현재 상태를 유지하는 방법
-  // useEffect(() => {
-  //   data.forEach((item: AnimalShelter) => {
-  //     const localStorageKey = `favorite_${item.ABDM_IDNTFY_NO}`;
-  //     const isFavorite = localStorage.getItem(localStorageKey);
-  //     if (isFavorite !== null) {
-  //       const updatedData = data.map((dataItem: AnimalShelter) =>
-  //         dataItem.ABDM_IDNTFY_NO === item.ABDM_IDNTFY_NO
-  //           ? { ...dataItem, isFavorite: isFavorite === "true" }
-  //           : dataItem
-  //       );
-  //       setData(updatedData);
-  //     }
-  //   });
-  // }, [data]);
-
   useEffect(() => {
     const fetchDataFromApi = async () => {
       try {
@@ -84,13 +69,42 @@ function Home() {
   const handleFilter = () => {
     setCurrentPage(1);
   };
+  const getUserFavorites = async () => {
+    try {
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
+      if (userError) {
+        console.error("Error getting user:", userError);
+        return;
+      }
+      const user = userData?.user;
+      const userId = user?.id;
+      if (!userId) {
+        console.error("User ID not found.");
+        return;
+      }
+      const { data: favoritesData, error: favoritesError } = await supabase
+        .from("favorites")
+        .select("animalId")
+        .eq("userId", userId);
+      if (favoritesError) {
+        console.error("Error fetching user favorites:", favoritesError);
+        return;
+      }
+      // 사용자의 즐겨찾기 데이터를 Set으로 저장
+      const userFavoriteIds = new Set(
+        favoritesData.map((fav: any) => fav.animalId)
+      );
+      setUserFavorites(userFavoriteIds);
+    } catch (error) {
+      console.error("Error getting user favorites:", error);
+    }
+  };
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!data) return null;
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
   const nearingDeadline = data.filter((item) => {
     const today = new Date();
     const endOfNotice = new Date(formatDate(item.PBLANC_END_DE));
@@ -98,8 +112,6 @@ function Home() {
     fiveDaysAfter.setDate(fiveDaysAfter.getDate() + 10);
     return endOfNotice <= fiveDaysAfter;
   });
-  // console.log(nearingDeadline);
-
   const filteredItems = data.filter((item) => {
     let matchesDate = true;
     let matchesLocation = true;
@@ -120,70 +132,70 @@ function Home() {
     return matchesDate && matchesLocation && matchesBreed;
   });
   const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
-
   const toggleFavorite = async (item: AnimalShelter) => {
     if (!isLoggedIn) {
       alert("로그인 후 즐겨찾기를 이용해주세요.");
       return;
     }
-
     try {
       const { data: userData, error: userError } =
         await supabase.auth.getUser();
-
       if (userError) {
         console.error("Error getting user:", userError);
         return;
       }
-
       const user = userData?.user;
       const userId = user?.id;
-
       if (!userId) {
         console.error("User ID not found.");
         return;
       }
-      //이미 즐겨찾기에 등록되어 있는지 확인해보기
-      const isAlreadyFavorited = data.find(
-        (dataItem: AnimalShelter) =>
-          dataItem.ABDM_IDNTFY_NO === item.ABDM_IDNTFY_NO && dataItem.isFavorite
-      );
+      // 데이터가 존재하는지 하지 않는지를 찾기
+      const { data: existingFavorites, error: existingFavoritesError } =
+        await supabase
+          .from("favorites")
+          .select()
+          .eq("userId", userId)
+          .eq("animalId", item.ABDM_IDNTFY_NO);
 
-      const upsertData = isAlreadyFavorited
-        ? {
-            userId: userId,
-            animalId: item.ABDM_IDNTFY_NO,
-            isFavorite: false,
-            email: user.email,
-          }
-        : {
-            userId: userId,
-            animalId: item.ABDM_IDNTFY_NO,
-            isFavorite: true,
-            email: user.email,
-          };
-
-      const { error } = await supabase.from("favorites").upsert(upsertData);
-
-      if (error) {
-        console.error("Error toggling favorite:", error);
+      if (existingFavoritesError) {
+        console.error(
+          "Error fetching existing favorites:",
+          existingFavoritesError
+        );
         return;
       }
+      // 즐겨찾기에 있는 경우 삭제하기 위해서 delete 사용
+      if (existingFavorites && existingFavorites.length > 0) {
+        const { error: deleteError } = await supabase
+          .from("favorites")
+          .delete()
+          .eq("userId", userId)
+          .eq("animalId", item.ABDM_IDNTFY_NO);
+        if (deleteError) {
+          console.error("Error deleting favorite:", deleteError);
+          return;
+        }
+      } else {
+        const { error: addError } = await supabase.from("favorites").upsert({
+          userId: userId,
+          animalId: item.ABDM_IDNTFY_NO,
+          isFavorite: true,
+          email: user.email,
+        });
 
-      const updatedData = data.map((dataItem: AnimalShelter) =>
-        dataItem.ABDM_IDNTFY_NO === item.ABDM_IDNTFY_NO
-          ? { ...dataItem, isFavorite: !dataItem.isFavorite }
-          : dataItem
-      );
-
-      setData(updatedData);
-      //새로고침 로컬에 저장?
-      const localStorageKey = `favorite_${item.ABDM_IDNTFY_NO}`;
-      localStorage.setItem(localStorageKey, upsertData.isFavorite.toString());
+        if (addError) {
+          console.error("Error adding favorite:", addError);
+          return;
+        }
+      }
+      // 사용자의 즐겨찾기 데이터 업데이트
+      await getUserFavorites();
     } catch (error) {
       console.error("Error toggling favorite:", error);
     }
   };
+
   return (
     <FavoritesProvider>
       <div className="Home">
@@ -226,9 +238,12 @@ function Home() {
                   toggleFavorite(item);
                 }}
               >
-                {item.isFavorite ? <FaHeart /> : <FaRegHeart />}
+                {userFavorites.has(item.ABDM_IDNTFY_NO || "") ? (
+                  <FaHeart />
+                ) : (
+                  <FaRegHeart />
+                )}
               </button>
-
               <p>고유 번호 : {item.ABDM_IDNTFY_NO}</p>
               <PetImg src={item.IMAGE_COURS} alt="Pet Thumbnail" />
               <p>접수 일지 : {formatDate(item.RECEPT_DE)}</p>
@@ -251,7 +266,9 @@ function Home() {
     </FavoritesProvider>
   );
 }
+
 export default Home;
+
 const Container = styled.div`
   display: flex;
   flex-wrap: wrap;

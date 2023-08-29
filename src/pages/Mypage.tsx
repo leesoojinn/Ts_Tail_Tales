@@ -7,7 +7,9 @@ interface FavoritePost {
 
 export default function Mypage() {
   const [favoritePosts, setFavoritePosts] = useState<FavoritePost[]>([]);
-  const [favoriteData, setFavoriteData] = useState<any[]>([]); // Change this type according to the data structure
+  // const [favoriteData, setFavoriteData] = useState<any[]>([]); // Change this type according to the data structure
+  // console.log("favoriteData", favoriteData);
+  console.log("favoritePosts", favoritePosts);
 
   useEffect(() => {
     async function fetchFavoritePosts() {
@@ -52,10 +54,10 @@ export default function Mypage() {
     <div>
       <h2>즐겨찾기 목록</h2>
       <div>
-        {favoriteData.length === 0 ? (
+        {favoritePosts.length === 0 ? (
           <p>즐겨찾기한 게시물이 없습니다.</p>
         ) : (
-          favoriteData?.map((data) => (
+          favoritePosts?.map((data) => (
             <div key={data.animalId}>{data.animalId}</div>
           ))
         )}
