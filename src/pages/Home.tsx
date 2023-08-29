@@ -32,14 +32,12 @@ function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   // 사용자의 즐겨찾기 데이터를 저장할 상태
   const [userFavorites, setUserFavorites] = useState<Set<string>>(new Set());
-  console.log("조하요", userFavorites);
 
   useEffect(() => {
     const getUser = async () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      console.log({ user });
       if (user) {
         setIsLoggedIn(true);
         // 사용자의 즐겨찾기 데이터를 가져옴
