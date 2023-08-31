@@ -21,16 +21,12 @@ function Mypage() {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-  const currentFavoriteAnimals = favoriteAnimals.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
+  const currentFavoriteAnimals = favoriteAnimals.slice(indexOfFirstItem, indexOfLastItem);
 
   useEffect(() => {
     // 유저 정보 가져오기
     const getUserInfo = async () => {
-      const { data: userData, error: userError } =
-        await supabase.auth.getUser();
+      const { data: userData, error: userError } = await supabase.auth.getUser();
 
       if (userError) {
         console.error("Error getting user:", userError);
@@ -60,10 +56,7 @@ function Mypage() {
         }
 
         // 사용자의 즐겨찾기 정보 가져오기
-        const { data: favoriteData, error: favoriteError } = await supabase
-          .from("favorites")
-          .select("animalId")
-          .eq("email", userEmail);
+        const { data: favoriteData, error: favoriteError } = await supabase.from("favorites").select("animalId").eq("email", userEmail);
 
         if (favoriteError) {
           console.error("사용자 즐겨찾기 항목 가져오기 오류:", favoriteError);
@@ -73,9 +66,7 @@ function Mypage() {
         const favoriteAnimalIds = favoriteData.map((fav: any) => fav.animalId);
 
         // 사용자의 즐겨찾기한 동물 정보 필터링
-        const favoriteAnimalsWithEmail = fetchedData.filter((item: any) =>
-          favoriteAnimalIds.includes(item.ABDM_IDNTFY_NO)
-        );
+        const favoriteAnimalsWithEmail = fetchedData.filter((item: any) => favoriteAnimalIds.includes(item.ABDM_IDNTFY_NO));
 
         setFavoriteAnimals(favoriteAnimalsWithEmail);
       } catch (e: Error | unknown) {
@@ -94,9 +85,7 @@ function Mypage() {
   }, [userEmail]);
 
   const removeFavorite = (animalId: string) => {
-    setFavoriteAnimals((prevFavorites) =>
-      prevFavorites.filter((item) => item.ABDM_IDNTFY_NO !== animalId)
-    );
+    setFavoriteAnimals((prevFavorites) => prevFavorites.filter((item) => item.ABDM_IDNTFY_NO !== animalId));
   };
 
   return (
@@ -112,26 +101,29 @@ function Mypage() {
           뒤로가기
         </BackButton>
         <Container>
-          {currentFavoriteAnimals?.map((item) => (
-            <PetCard
-              key={item.ABDM_IDNTFY_NO}
-              item={item}
-              onRemoveFavorite={() => {
-                if (item.ABDM_IDNTFY_NO) {
-                  removeFavorite(item.ABDM_IDNTFY_NO);
-                }
-              }}
-            />
-          ))}
+          {loading ? ( // 로딩 중인 경우
+            <LoadingText>Loading...</LoadingText>
+          ) : (
+            // 로딩이 완료된 경우
+            currentFavoriteAnimals?.map((item) => (
+              <PetCard
+                key={item.ABDM_IDNTFY_NO}
+                item={item}
+                onRemoveFavorite={() => {
+                  if (item.ABDM_IDNTFY_NO) {
+                    removeFavorite(item.ABDM_IDNTFY_NO);
+                  }
+                }}
+              />
+            ))
+          )}
         </Container>
       </MyPage>
-      <PaginationContainer>
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(favoriteAnimals.length / itemsPerPage)}
-          setCurrentPage={handlePageChange}
-        />
-      </PaginationContainer>
+      {loading ? null : (
+        <PaginationContainer>
+          <Pagination currentPage={currentPage} totalPages={Math.ceil(favoriteAnimals.length / itemsPerPage)} setCurrentPage={handlePageChange} />
+        </PaginationContainer>
+      )}
     </>
   );
 }
@@ -176,6 +168,10 @@ const Container = styled.div`
   margin: 20px;
   grid-template-columns: repeat(3, 1fr); /* 세 개의 컬럼으로 그리드 설정 */
   gap: 30px; /* 컬럼 간의 간격 */
+`;
+
+const LoadingText = styled.h3`
+  text-align: center;
 `;
 
 const PaginationContainer = styled.div`

@@ -10,6 +10,7 @@ import PostCreate from "./pages/PostCreate";
 import PostEdit from "./pages/PostEdit";
 import Community from "./pages/Community";
 import PostDetail from "./pages/PostDetail";
+import Location from "./pages/Location";
 import { FavoritesProvider } from "./components/FavoritesContext";
 
 // animals={[]} loading={false} error={null} />}
@@ -29,6 +30,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/mypage/:id" element={<Mypage />} />
           <Route path="/community" element={<Community />} />
+          <Route path="/location" element={<Location />} />
         </Route>
 
         <Route

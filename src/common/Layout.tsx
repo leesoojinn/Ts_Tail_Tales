@@ -13,17 +13,15 @@ function Layout() {
       setUser(JSON.parse(storedUser));
     }
 
-    const authSubscription = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === "SIGNED_IN" && session) {
-          setUser(session.user);
-          sessionStorage.setItem("user", JSON.stringify(session.user));
-        } else if (event === "SIGNED_OUT") {
-          setUser(null);
-          sessionStorage.removeItem("user");
-        }
+    const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        setUser(session.user);
+        sessionStorage.setItem("user", JSON.stringify(session.user));
+      } else if (event === "SIGNED_OUT") {
+        setUser(null);
+        sessionStorage.removeItem("user");
       }
-    );
+    });
 
     return () => {
       authSubscription.data.subscription.unsubscribe();
@@ -32,17 +30,12 @@ function Layout() {
 
   useEffect(() => {
     if (user) {
-      setUserNickname(
-        user.user_metadata.user_name || user.user_metadata.full_name
-      );
+      setUserNickname(user.user_metadata.user_name || user.user_metadata.full_name);
       if (user.email) {
         sessionStorage.setItem("userEmail", user.email);
       }
 
-      sessionStorage.setItem(
-        "userNickname",
-        user.user_metadata.user_name || user.user_metadata.full_name
-      );
+      sessionStorage.setItem("userNickname", user.user_metadata.user_name || user.user_metadata.full_name);
     }
   }, [user]);
 
@@ -125,8 +118,7 @@ function Layout() {
               >
                 <img
                   src={
-                    user?.user_metadata.avatar_url ||
-                    process.env.PUBLIC_URL + "/image/profile.jpg" // 기본 이미지 경로
+                    user?.user_metadata.avatar_url || process.env.PUBLIC_URL + "/image/profile.jpg" // 기본 이미지 경로
                   }
                   alt="User Avatar"
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
@@ -134,10 +126,7 @@ function Layout() {
               </div>
               <span>
                 {userNickname ? (
-                  <Link
-                    to={`/mypage/${user.id}`}
-                    style={{ color: "black", textDecoration: "none" }}
-                  >
+                  <Link to={`/mypage/${user.id}`} style={{ color: "black", textDecoration: "none" }}>
                     {userNickname}님
                   </Link>
                 ) : (
@@ -150,10 +139,10 @@ function Layout() {
           <Link to="/home" style={{ color: "black", textDecoration: "none" }}>
             기다리는 친구들 |
           </Link>
-          <Link
-            to="/community"
-            style={{ color: "black", textDecoration: "none" }}
-          >
+          <Link to="/location" style={{ color: "black", textDecoration: "none" }}>
+            location |
+          </Link>
+          <Link to="/community" style={{ color: "black", textDecoration: "none" }}>
             커뮤니티 |
           </Link>
           {renderLoginButton()} {/* 이 위치에서 renderLoginButton 함수 호출 */}

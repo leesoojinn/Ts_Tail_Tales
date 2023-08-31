@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 export interface AnimalShelter {
   RECEPT_DE: string;
@@ -21,11 +21,11 @@ export interface AnimalShelter {
 const API_KEY = process.env.REACT_APP_API_KEY;
 const BASE_URL = "https://openapi.gg.go.kr/AbdmAnimalProtect?";
 
-export async function fetchAnimalData() {
+export async function fetchAnimalData(): Promise<AnimalShelter[]> {
   const URL = `${BASE_URL}KEY=${API_KEY}&Type=json`;
 
   try {
-    const response = await axios.get(URL, {
+    const response: AxiosResponse<any> = await axios.get(URL, {
       params: {
         serviceKey: API_KEY,
         numOfRows: 10,
@@ -38,9 +38,25 @@ export async function fetchAnimalData() {
   }
 }
 
-export function formatDate(dateString: string) {
+export function formatDate(dateString: string | undefined): string {
+  if (!dateString || dateString.length < 8) {
+    return "잘못된 날짜";
+  }
+
   const year = dateString.substring(0, 4);
   const month = dateString.substring(4, 6);
   const day = dateString.substring(6, 8);
   return `${year}-${month}-${day}`;
 }
+
+export const getShelterPets = async (shelter: string): Promise<AnimalShelter[]> => {
+  try {
+    const URL = `${BASE_URL}KEY=${API_KEY}&Type=json&SHTER_NM=${shelter}&STATE_NM=보호중`;
+
+    const response: AxiosResponse<any> = await axios.get(URL);
+    return response.data.AbdmAnimalProtect.row || [];
+  } catch (err: any) {
+    console.log(err.message);
+    return [];
+  }
+};
