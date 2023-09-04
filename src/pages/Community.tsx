@@ -78,7 +78,7 @@ export default function Community() {
                       <ImageContainer>
                         {extractImages(post.content)?.map((imgUrl, index) => (
                           <img
-                            src={imgUrl}
+                            src={extractImages(post.content)[0]}
                             alt={`Image ${index}`}
                             key={index}
                           />
