@@ -141,7 +141,15 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                   />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <strong>{comment.userNickname || "익명"}</strong> <br />
+                  {email === comment.email ? (
+                    <strong style={{ color: "#f8b3b3" }}>
+                      {comment.userNickname || "익명"}
+                    </strong>
+                  ) : (
+                    <strong>{comment.userNickname || "익명"}</strong>
+                  )}
+
+                  <br />
                   <span style={{ color: "gray" }}>
                     {new Date(comment.date).toLocaleString("ko-KR", {
                       year: "numeric",

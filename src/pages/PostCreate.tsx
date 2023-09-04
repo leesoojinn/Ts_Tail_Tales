@@ -106,7 +106,7 @@ export default function PostCreate(data: any) {
           <PostImg
             onContentChange={handleContentChange}
             initialContent={content}
-          />{" "}
+          />
           {/* data.content가 아닌 content를 사용 */}
         </FormItem>
         <SubmitButton type="submit">작성</SubmitButton>

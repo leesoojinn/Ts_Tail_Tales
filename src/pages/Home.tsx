@@ -14,7 +14,7 @@ function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15;
+  const itemsPerPage = 16;
   const [selectedBeginDate, setSelectedBeginDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");

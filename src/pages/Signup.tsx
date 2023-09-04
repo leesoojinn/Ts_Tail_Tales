@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [nickname, setNickname] = useState("");
   const navigate = useNavigate();
   const signupHandler = async (e: FormEvent) => {
@@ -31,6 +32,15 @@ function SignUp() {
       alert("비밀번호 6자리 이상 입력해주세요.");
       return;
     }
+
+    if (!password || !passwordConfirm) {
+      alert("비밀번호 또는 비밀번호 확인을 확인해주세요.");
+      return;
+    } else if (password !== passwordConfirm) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
     if (!nickname) {
       alert("닉네임을 입력해주세요.");
       return;
@@ -64,7 +74,7 @@ function SignUp() {
           alert("회원 가입 중 오류가 발생했습니다.");
         }
       } else {
-        alert(signUpError.message);
+        alert("이미 가입되어있는 정보입니다.");
       }
     } catch (error) {
       alert("알 수 없는 오류가 발생했습니다.");
@@ -97,6 +107,17 @@ function SignUp() {
             />
           </div>
           <div>
+            <InputLabel>비밀번호 확인 </InputLabel>
+            ​
+            <InputBox
+              type="password"
+              id="passwordConfirm"
+              placeholder="비밀번호 확인"
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+            />
+          </div>
+          <div>
             <InputLabel>닉네임</InputLabel>
             ​
             <InputBox
@@ -113,7 +134,7 @@ function SignUp() {
             <Link to="/login">로그인</Link>
           </NoAccountMessage>
         </InputContainer>
-      </form>{" "}
+      </form>
     </SignupContainer>
   );
 }
