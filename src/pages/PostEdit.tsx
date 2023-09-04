@@ -20,18 +20,11 @@ export default function PostEdit() {
   const { id } = useParams<{ id: string }>();
 
   // 게시물 데이터를 불러오는 쿼리
-  const { data, isLoading, isError, error } = useQuery(
-    ["posts", id],
-    async () => {
-      const { data } = await supabase
-        .from("posts")
-        .select("*")
-        .eq("id", id)
-        .single();
+  const { data, isLoading, isError, error } = useQuery(["posts", id], async () => {
+    const { data } = await supabase.from("posts").select("*").eq("id", id).single();
 
-      return data;
-    }
-  );
+    return data;
+  });
   console.log("data", data);
 
   // 게시물 삭제를 처리하는 뮤테이션
@@ -71,7 +64,7 @@ export default function PostEdit() {
       id: data.id,
       title,
       content,
-      date: new Date().toISOString(),
+      date: data.date || new Date().toISOString(),
       userNickname, // 상태로부터 사용자 닉네임 가져옴
       email: userEmail, // 사용자 이메일 추가
     };
@@ -93,8 +86,7 @@ export default function PostEdit() {
     }
 
     // 사용자 닉네임을 가져와서 상태 업데이트
-    const userNicknameFromSessionStorage =
-      sessionStorage.getItem("userNickname");
+    const userNicknameFromSessionStorage = sessionStorage.getItem("userNickname");
     if (userNicknameFromSessionStorage) {
       setUserNickname(userNicknameFromSessionStorage);
     }
@@ -166,10 +158,7 @@ export default function PostEdit() {
 
         <FormItem>
           <label>내용:</label>
-          <PostImg
-            onContentChange={handleContentChange}
-            initialContent={data.content}
-          />
+          <PostImg onContentChange={handleContentChange} initialContent={data.content} />
         </FormItem>
         <SubmitButton type="submit">수정</SubmitButton>
       </Form>
