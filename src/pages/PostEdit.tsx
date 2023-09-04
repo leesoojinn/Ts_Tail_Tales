@@ -179,6 +179,8 @@ export default function PostEdit() {
 
 const Container = styled.div`
   padding: 20px;
+  width: 1000px;
+  margin: 0 auto;
 `;
 
 const BackButton = styled.button`

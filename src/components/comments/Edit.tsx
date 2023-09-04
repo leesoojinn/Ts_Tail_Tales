@@ -22,7 +22,6 @@ export default function Edit({
   onUpdateComplete: () => void;
 }) {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   const {
     data: initialData,

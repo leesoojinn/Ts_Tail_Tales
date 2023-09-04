@@ -117,6 +117,8 @@ export default function PostCreate(data: any) {
 
 const Container = styled.div`
   padding: 20px;
+  width: 1000px;
+  margin: 0 auto;
 `;
 
 const BackButton = styled.button`
@@ -131,6 +133,12 @@ const BackButton = styled.button`
     background-color: #f8b3b3;
     transform: scale(1.05);
   }
+
+  /* @media (max-width: 768px) {
+    // 화면 너비가 768px 이하일 때
+    margin-left: 0; // 마진을 0으로 조정하여 가운데 정렬
+    margin-top: 10px; // 상단 마진을 추가하여 버튼 간 간격 확보/
+  } */
 `;
 
 const BackIcon = styled(FiArrowLeft)`

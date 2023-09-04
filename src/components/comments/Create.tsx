@@ -154,6 +154,9 @@ const CreateTextarea = styled.textarea`
   font-size: 15px;
   padding: 10px;
   margin-bottom: 10px;
+  border: none;
+  border: 1px solid #b5b5b5;
+  border-radius: 8px;
 `;
 
 const CreateButton = styled.button`

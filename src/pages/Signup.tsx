@@ -167,10 +167,12 @@ const NoAccountMessage = styled.div`
   margin-top: 10px;
   font-size: 14px;
   color: #555;
-  ​ a {
+
+  a {
     color: #333;
     text-decoration: underline;
-    ​ &:hover {
+
+    &:hover {
       color: #555;
     }
   }
