@@ -26,7 +26,11 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
   } = useQuery(
     ["comments", id],
     async () => {
-      const { data, error } = await supabase.from("comments").select("*").eq("postId", id).order("date", { ascending: true });
+      const { data, error } = await supabase
+        .from("comments")
+        .select("*")
+        .eq("postId", id)
+        .order("date", { ascending: true });
 
       if (error) {
         throw error;
@@ -45,15 +49,17 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
       setUser(JSON.parse(storedUser));
     }
 
-    const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        setUser(session.user);
-        sessionStorage.setItem("user", JSON.stringify(session.user));
-      } else if (event === "SIGNED_OUT") {
-        setUser(null);
-        sessionStorage.removeItem("user");
+    const authSubscription = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "SIGNED_IN" && session) {
+          setUser(session.user);
+          sessionStorage.setItem("user", JSON.stringify(session.user));
+        } else if (event === "SIGNED_OUT") {
+          setUser(null);
+          sessionStorage.removeItem("user");
+        }
       }
-    });
+    );
 
     return () => {
       authSubscription.data.subscription.unsubscribe();
@@ -82,7 +88,10 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
   const indexOfLastComment = currentPage * itemsPerPage;
   const indexOfFirstComment = indexOfLastComment - itemsPerPage;
 
-  const currentComments = commentData!.slice(indexOfFirstComment, indexOfLastComment);
+  const currentComments = commentData!.slice(
+    indexOfFirstComment,
+    indexOfLastComment
+  );
 
   if (isLoading) {
     return <div>로딩 중 ...</div>;
@@ -190,7 +199,11 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
               )}
             </div>
           ))}
-          <Pagination currentPage={currentPage} totalPages={Math.ceil(commentData.length / itemsPerPage)} setCurrentPage={handlePageChange} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(commentData.length / itemsPerPage)}
+            setCurrentPage={handlePageChange}
+          />
         </>
       )}
     </div>
