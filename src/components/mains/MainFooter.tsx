@@ -21,7 +21,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: flex-end;
   height: 20vh;
-  background-color: #f0f0f0; /* 배경색 설정 */
+  background-color: hsl(30, 1%, 53%); /* 배경색 설정 */
   border-radius: 0 0 50px 50px; /* 아래쪽 모서리에만 반지름 설정 */
 `;
 

@@ -160,6 +160,7 @@ const Title = styled.div`
 
 const BackButton = styled.button`
   padding: 10px 20px;
+  margin-left: 20px;
   background-color: #f8b3b3;
   color: white;
   border: none;

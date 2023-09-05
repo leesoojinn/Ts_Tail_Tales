@@ -3,6 +3,7 @@ import { supabase } from "../supabase";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
+import MainFooter from "../components/mains/MainFooter";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -81,142 +82,208 @@ function Login() {
   };
 
   return (
-    <LoginContainer>
-      <MainContainer>
-        <form onSubmit={signInWithEmail}>
-          <div>
-            <InputBox
-              type="email"
-              id="email"
-              placeholder="이메일"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div>
-            <InputBox
-              type="password"
-              id="password"
-              placeholder="비밀번호"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <StButton>로그인</StButton>
-        </form>
-        <br />
-        <div>
+    <>
+      <Stdiv>
+        <StloginText style={{ display: "flex", alignItems: "center" }}>
           <button
-            onClick={loginWithKakao}
-            style={{ background: "none", border: "none", cursor: "pointer" }}
+            className="backBtn"
+            onClick={() => {
+              window.history.back();
+            }}
           >
-            <img
-              src="https://t1.kakaocdn.net/kakaocorp/kakaocorp/admin/5f9c58c2017800001.png"
-              alt="Kakao Login"
-              style={{
-                width: "45px",
-                height: "auto",
-              }}
-            />
+            〈
           </button>
-          <button
-            onClick={loginWithGoogle}
-            style={{ background: "none", border: "none", cursor: "pointer" }}
-          >
-            <img
-              src="data:image/png;base64,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"
-              alt="Google Login"
-              style={{
-                width: "45px",
-                height: "auto",
-              }}
-            />
-          </button>
-        </div>
-        <br />
-        <br />
+          <h2 className="logintext">로그인</h2>
+        </StloginText>
+        <LoginContainer>
+          <Stlogo>TailTales</Stlogo>
+          <form onSubmit={signInWithEmail}>
+            <StInputBoxDiv>
+              <InputBox
+                type="email"
+                id="email"
+                placeholder="이메일"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </StInputBoxDiv>
+            <StInputBoxDiv>
+              <InputBox
+                type="password"
+                id="password"
+                placeholder="비밀번호"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </StInputBoxDiv>
+            <StButton>로그인</StButton>
+          </form>
 
-        <NoAccountMessage>
-          계정이 없으신가요?
-          <Link to="/signup">회원가입</Link>
-        </NoAccountMessage>
-      </MainContainer>
-    </LoginContainer>
+          <p>소셜 로그인</p>
+          <div>
+            <StKakaoLoginBtn onClick={loginWithKakao}>
+              <img
+                className="kakaoimg"
+                src="/image/kakao.png"
+                alt="Kakao Login"
+              />
+            </StKakaoLoginBtn>
+            <StGoolgeLoginBtn onClick={loginWithGoogle}>
+              <img
+                className="googleimg"
+                src="/image/google.png"
+                alt="Google Login"
+              />
+            </StGoolgeLoginBtn>
+          </div>
+
+          <NoAccountMessage>
+            계정이 없으신가요?
+            <Link to="/signup">회원가입</Link>
+          </NoAccountMessage>
+        </LoginContainer>
+      </Stdiv>
+      <MainFooter />
+    </>
   );
 }
 
 export default Login;
 
-// 스타일 영역
-const LoginContainer = styled.div`
-  margin: auto;
-  background-color: #fff;
-  padding: 20px;
-  width: 400px;
-  height: 700px;
-  border-radius: 10px;
+const StloginText = styled.div`
+  margin-top: 0;
+  padding-left: 20px;
+  color: white;
+  margin-bottom: 150px;
+
+  .backBtn {
+    background: none;
+    border: none;
+    color: white;
+  }
+
+  .logintext {
+    margin: 0 auto;
+    max-width: 350px;
+    padding: 20px;
+  }
 `;
 
-const MainContainer = styled.div`
+const Stdiv = styled.div`
+  /* height: 1000px; */
+  /* 머지 */
+  background-image: url("/image/login2.png");
+  background-size: cover;
+  /* 이미지를 컨테이너에 맞게 확대/축소. */
+  background-repeat: no-repeat; /* 이미지 반복 없음 */
+  background-position: center; /*이미지 중앙 정렬*/
+  padding: 0 50px 50px 50px;
+`;
+
+// 스타일 영역
+const LoginContainer = styled.div`
+  border-radius: 20px;
+  background: #fdfaf6;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  margin: 150px 50px 200px auto;
+  max-width: 350px;
+  padding: 20px;
+  width: 350px;
+  height: 450px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 1px solid #9f9a9a;
-  padding: 40px;
-  margin-top: 20px;
-  border-radius: 10px;
+  border: 1px solid #c7c4c4;
+`;
+
+const Stlogo = styled.h2`
+  padding: 20px 0 20px;
+`;
+
+const StInputBoxDiv = styled.div`
+  padding: 0 0 10px;
 `;
 
 const InputBox = styled.input`
-  width: 280px;
-  height: 50px;
+  width: 270px;
+  height: 35px;
   margin: 5px;
-  padding-left: 10px;
+  padding: 5px 16px;
   font-size: 15px;
-  display: inline-block;
-  outline: none;
+  /* border: 1px solid #b4b4b4; */
+  border: none;
+  border-radius: 10px;
+  background: #e4dfd9;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  /* color: #888888; */
+  /* display: inline-block; */
+  /* outline: none; */
 
   &:focus {
-    border: 1px solid #333;
-    border-radius: 3px;
+    border-radius: 10px;
   }
-  /* width: 282px;
-  height: 30px;
-  margin: 5px 5px 10px;
-  padding-left: 10px;
-  font-size: 15px;
-  display: inline-block;
-  outline: none;
 
-  &:focus {
-    border: 2px solid #333;
-    border-radius: 3px;
-  } */
+  &:hover {
+    transform: scale(1.05);
+  }
 `;
 
 const StButton = styled.button`
-  width: 300px;
-  height: 50px;
-  margin: 5px;
+  width: 192px;
+  height: 44px;
+  /* padding: 8px; */
+  margin: 5px 55px;
   cursor: pointer;
   font-size: 15px;
-  border-radius: 3px;
-`;
-
-const SignUpButton = styled(Link)`
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #d1cbcb;
-  color: #454749;
-  text-decoration: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  border: none;
+  color: white;
+  border-radius: 999px;
+  background: #746464;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 
   &:hover {
-    background-color: #d1d4d7;
+    transform: scale(1.05);
   }
 `;
+
+const StKakaoLoginBtn = styled.button`
+  background: none;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  .kakaoimg {
+    width: 45px;
+    height: auto;
+  }
+`;
+
+const StGoolgeLoginBtn = styled.button`
+  background: none;
+  /* width: 45px;
+  height: 45px; */
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  .googleimg {
+    width: 45px;
+    height: auto;
+  }
+`;
+
 const NoAccountMessage = styled.div`
   margin-top: 10px;
   font-size: 14px;

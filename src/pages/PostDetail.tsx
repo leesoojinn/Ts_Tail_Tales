@@ -27,11 +27,7 @@ export default function PostDetail() {
     isError,
     error,
   } = useQuery(["posts", id], async () => {
-    const { data, error } = await supabase
-      .from("posts")
-      .select("*")
-      .eq("id", id)
-      .single();
+    const { data, error } = await supabase.from("posts").select("*").eq("id", id).single();
 
     if (error) {
       throw error;
@@ -42,22 +38,15 @@ export default function PostDetail() {
   console.log("detailpostid", post);
 
   // 댓글 목록 가져오기
-  const { data: comments, isLoading: isLoadingComments } = useQuery(
-    ["comments", id],
-    async () => {
-      const { data, error } = await supabase
-        .from("comments")
-        .select("*")
-        .eq("postId", id)
-        .order("date", { ascending: true });
+  const { data: comments, isLoading: isLoadingComments } = useQuery(["comments", id], async () => {
+    const { data, error } = await supabase.from("comments").select("*").eq("postId", id).order("date", { ascending: true });
 
-      if (error) {
-        throw error;
-      }
-
-      return data;
+    if (error) {
+      throw error;
     }
-  );
+
+    return data;
+  });
 
   // 게시물 수정 후 댓글 목록 다시 가져오기
   const refreshPostData = async () => {
@@ -97,107 +86,142 @@ export default function PostDetail() {
   };
 
   return (
-    <Container>
-      <BackButton onClick={() => navigate("/community")} className="backbutton">
-        <BackIcon className="backicon" />
-        뒤로가기
-      </BackButton>
-      <p>
-        <strong>{post.userNickname}</strong>님의 글입니다.
-      </p>
-      <ButtonContainer>
-        {isUserAuthorized && (
-          <>
-            <EditButton to={`/post-edit/${post.id}`}>수정</EditButton>
-            <DeleteButton onClick={handleDelete}>삭제</DeleteButton>
-          </>
-        )}
-      </ButtonContainer>
-      <Title>{post.title}</Title>
-      <Content>{ReactHtmlParser(post.content)}</Content>
+    <OuterContainer>
+      <Container>
+        <BackButton
+          onClick={() => navigate("/community")}
+          className="backbutton"
+        >
+          <BackIcon className="backicon">&lt;</BackIcon>
+        </BackButton>
 
-      <Create onCommentAdded={refreshPostData} postId={post.id} />
-      <Comment comments={comments} />
-    </Container>
+        <UserInfo>
+          <strong>{post.userNickname}</strong>님의 글입니다.
+        </UserInfo>
+
+        <Title>{post.title}</Title>
+        <Content>
+          {ReactHtmlParser(post.content)}
+          <ButtonContainer>
+            {isUserAuthorized && (
+              <>
+                <EditButton to={`/post-edit/${post.id}`}>수정</EditButton>
+                <DeleteButton onClick={handleDelete}>삭제</DeleteButton>
+              </>
+            )}
+          </ButtonContainer>
+        </Content>
+
+        <Create onCommentAdded={refreshPostData} postId={post.id} />
+        <Comment comments={comments} />
+      </Container>
+    </OuterContainer>
   );
 }
 
 const BackButton = styled.button`
   padding: 10px 20px;
-  background-color: #f8b3b3;
+  background-color: #fdfaf6;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 20px;
   cursor: pointer;
   text-decoration: none;
+  display: flex;
+  align-items: center;
   &:hover {
-    background-color: #f8b3b3;
+    background-color: #bdb7b0;
     transform: scale(1.05);
   }
 `;
 
-const BackIcon = styled(FiArrowLeft)`
+const BackIcon = styled.span`
   margin-right: 5px;
+  font-size: 20px;
+  border-radius: 50%;
+  color: black;
 `;
 
 const Container = styled.div`
   padding: 20px;
-  width: 1000px;
-  margin: 0 auto; /* 수평 가운데 정렬 */
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  background-color: #fdfaf6;
+  border-radius: 20px;
+  /* 중앙 정렬 및 양옆 공백 설정 */
+  /* max-width: 1200px; */ /* 이 부분을 제거합니다. */
+  /* margin: 0 auto; */ /* 이 부분을 제거합니다. */
+  /* padding: 0 1rem; */ /* 이 부분을 제거합니다. */
+`;
+const OuterContainer = styled.div`
+  background-color: #fdfaf6;
+  display: flex;
+  justify-content: center;
+`;
 
-  // /* 중앙 정렬 및 양옆 공백 설정 */
-  // max-width: 1200px; /* 원하는 최대 너비로 조정 */
-  // margin: 0 auto;
-  // padding: 0 1rem;
-
-  // @media (min-width: 700px) {
-  //   padding: 0 2rem;
-  // }
+const UserInfo = styled.p`
+  text-align: center;
+  margin-top: 20px;
 `;
 
 const Title = styled.h3`
-  border: 1px solid #e8e8e8;
+  border: 1px solid #fdfaf6;
   border-radius: 8px;
-  height: 60px; /* 높이 조정 */
+  padding: 10px;
+  font-size: 32px;
   text-align: center;
-  font-size: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 20px 0; /* 위 아래 여백 추가 */
+  margin: 20px 0;
+  background-color: white;
+  border-radius: 20px;
 `;
 
 const Content = styled.div`
-  border: 1px solid #e8e8e8;
+  border: 1px solid #fdfaf6;
   border-radius: 8px;
   text-align: center;
   overflow: hidden; /* 내용이 넘칠 경우 숨김 처리 */
+  margin-bottom: 20px;
+  padding: 20px; /* 내용의 안쪽 여백 조정 */
+  background-color: white;
+  border-radius: 20px;
 `;
 
 const ButtonContainer = styled.div`
   display: flex;
-  justify-content: center;
   margin-top: 20px;
+  justify-content: flex-end;
+  padding: 10px 0;
 `;
 
 const EditButton = styled(Link)`
-  color: gray;
-  margin-right: 5px;
+  background-color: #bdb7b0;
+  color: white;
+  padding: 8px 16px;
   border: none;
-  background: none;
+  border-radius: 20px;
   cursor: pointer;
   text-decoration: none;
-  font-size: 15px;
+  font-size: 13px;
+  margin-right: 10px;
+  &:hover {
+    background-color: #606060;
+  }
 `;
 
 const DeleteButton = styled.button`
-  color: #dd3a3a;
-  margin-right: 5px;
+  background-color: #746464;
+  color: white;
+  padding: 8px 16px;
   border: none;
-  background: none;
+  border-radius: 20px;
   cursor: pointer;
   text-decoration: none;
-  font-size: 15px;
+  font-size: 13px;
+  margin-right: 10px;
+  &:hover {
+    background-color: #606060;
+  }
 `;
 
 const LoadingText = styled.div`

@@ -212,8 +212,10 @@ const Input = styled.input`
 `;
 
 const SubmitButton = styled.button`
+  width: 80px;
+  height: 40px;
   padding: 10px 20px;
-  background-color: #f8b3b3;
+  background-color: #746464;
   color: white;
   border: none;
   cursor: pointer;

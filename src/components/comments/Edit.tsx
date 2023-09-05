@@ -126,17 +126,21 @@ const Textarea = styled.textarea`
   font-size: 15px;
   padding: 10px;
   margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid white;
 `;
 const SubmitButton = styled.button`
-  padding: 10px 20px;
-  background-color: #f8b3b3;
+  background-color: #bdb7b0;
   color: white;
+  padding: 8px 16px;
   border: none;
-  border-radius: 8px;
+  border-radius: 20px;
   cursor: pointer;
+  text-decoration: none;
+  font-size: 15px;
+  margin-right: 10px;
   &:hover {
-    background-color: #dd3a3a;
-    transform: scale(1.05);
+    background-color: #606060;
   }
 `;
 const LoadingText = styled.div`

@@ -127,47 +127,67 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
   return (
     <CreateContainer>
       <CreateForm onSubmit={handleSubmit}>
-        <CreateTextarea
-          placeholder="댓글을 입력하세요"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        <CreateButton type="submit">작성</CreateButton>
+        <InputContainer>
+          <CreateTextarea
+            placeholder="댓글을 입력하세요"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
+          <CreateButton type="submit">작성</CreateButton>
+        </InputContainer>
       </CreateForm>
     </CreateContainer>
   );
 }
-
 const CreateContainer = styled.div`
+  margin-top: 20px;
   padding: 20px;
+  border: 1px solid #fdfaf6;
+  border-radius: 8px;
+  background-color: white;
 `;
 
 const CreateForm = styled.form`
   display: flex;
   flex-direction: column;
-  align-items: center;
+`;
+
+const InputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
 `;
 
 const CreateTextarea = styled.textarea`
-  width: 100%;
-  height: 50px;
-  font-size: 15px;
   padding: 10px;
-  margin-bottom: 10px;
-  border: none;
-  border: 1px solid #b5b5b5;
+  border: 1px solid white;
   border-radius: 8px;
+  resize: none;
 `;
 
 const CreateButton = styled.button`
-  padding: 10px 20px;
-  background-color: #f8b3b3;
-  border-radius: 8px;
+  background-color: #746464;
   color: white;
+  padding: 8px 16px;
   border: none;
+  border-radius: 20px;
   cursor: pointer;
+  text-decoration: none;
+  font-size: 13px;
+  align-self: flex-end;
+  width: fit-content;
   &:hover {
-    background-color: #dd3a3a;
-    transform: scale(1.05);
+    background-color: #606060;
+  }
+`;
+
+const CreateStyle = styled(CreateContainer)`
+  ${CreateForm} {
+    ${InputContainer} {
+      ${CreateTextarea}, ${CreateButton} {
+        width: 100%;
+      }
+    }
   }
 `;
