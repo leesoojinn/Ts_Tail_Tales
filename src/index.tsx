@@ -10,7 +10,9 @@ import store from "./redux/configstore";
 
 const queryClient = new QueryClient();
 
-const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+const root = ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement
+);
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

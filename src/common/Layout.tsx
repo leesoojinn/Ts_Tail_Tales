@@ -16,17 +16,19 @@ function Layout() {
     }
 
     // Supabase 인증 상태 변경 이벤트 구독
-    const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        // 사용자가 로그인한 경우 상태 업데이트 및 세션 스토리지에 저장
-        setUser(session.user);
-        sessionStorage.setItem("user", JSON.stringify(session.user));
-      } else if (event === "SIGNED_OUT") {
-        // 사용자가 로그아웃한 경우 상태 초기화 및 세션 스토리지에서 사용자 정보 삭제
-        setUser(null);
-        sessionStorage.removeItem("user");
+    const authSubscription = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "SIGNED_IN" && session) {
+          // 사용자가 로그인한 경우 상태 업데이트 및 세션 스토리지에 저장
+          setUser(session.user);
+          sessionStorage.setItem("user", JSON.stringify(session.user));
+        } else if (event === "SIGNED_OUT") {
+          // 사용자가 로그아웃한 경우 상태 초기화 및 세션 스토리지에서 사용자 정보 삭제
+          setUser(null);
+          sessionStorage.removeItem("user");
+        }
       }
-    });
+    );
 
     return () => {
       // 컴포넌트 언마운트 시 인증 상태 변경 이벤트 구독 해제
@@ -37,12 +39,17 @@ function Layout() {
   useEffect(() => {
     // 사용자가 로그인한 경우 사용자 닉네임 설정 및 세션 스토리지에 저장
     if (user) {
-      setUserNickname(user.user_metadata.user_name || user.user_metadata.full_name);
+      setUserNickname(
+        user.user_metadata.user_name || user.user_metadata.full_name
+      );
       if (user.email) {
         sessionStorage.setItem("userEmail", user.email);
       }
 
-      sessionStorage.setItem("userNickname", user.user_metadata.user_name || user.user_metadata.full_name);
+      sessionStorage.setItem(
+        "userNickname",
+        user.user_metadata.user_name || user.user_metadata.full_name
+      );
     }
   }, [user]);
 
@@ -102,7 +109,15 @@ function Layout() {
           zIndex: 1000,
         }}
       >
-        <Link to="/" style={{ color: "white", textDecoration: "none", fontWeight: "bold", fontSize: "30px" }}>
+        <Link
+          to="/"
+          style={{
+            color: "white",
+            textDecoration: "none",
+            fontWeight: "bold",
+            fontSize: "30px",
+          }}
+        >
           TailTales
         </Link>
         <div
@@ -125,7 +140,8 @@ function Layout() {
               >
                 <img
                   src={
-                    user?.user_metadata.avatar_url || process.env.PUBLIC_URL + "/image/profile.jpg" // 기본 이미지 경로
+                    user?.user_metadata.avatar_url ||
+                    process.env.PUBLIC_URL + "/image/profile.jpg" // 기본 이미지 경로
                   }
                   alt="User Avatar"
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
@@ -133,7 +149,14 @@ function Layout() {
               </div>
               <span>
                 {userNickname ? (
-                  <Link to={`/mypage/${user.id}`} style={{ color: "white", textDecoration: "none", fontWeight: "bold" }}>
+                  <Link
+                    to={`/mypage/${user.id}`}
+                    style={{
+                      color: "white",
+                      textDecoration: "none",
+                      fontWeight: "bold",
+                    }}
+                  >
                     {userNickname}님
                   </Link>
                 ) : (
@@ -146,7 +169,10 @@ function Layout() {
           <Link to="/home" style={{ color: "white", textDecoration: "none" }}>
             기다리는 친구들 |
           </Link>
-          <Link to="/community" style={{ color: "white", textDecoration: "none" }}>
+          <Link
+            to="/community"
+            style={{ color: "white", textDecoration: "none" }}
+          >
             커뮤니티 |
           </Link>
           {renderLoginButton()} {/* 이 위치에서 renderLoginButton 함수 호출 */}
