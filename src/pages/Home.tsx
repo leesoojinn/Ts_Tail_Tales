@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { styled } from "styled-components";
+import { useQuery } from "react-query";
 import { fetchAnimalData, formatDate, AnimalShelter } from "../api/fetchData";
 import Category from "../components/Category";
 import "slick-carousel/slick/slick.css";
@@ -10,49 +11,30 @@ import { FavoritesProvider } from "../components/FavoritesContext";
 import PetCard from "../components/Petcard";
 
 function Home() {
-  const [data, setData] = useState<Array<AnimalShelter>>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const { data, isLoading, isError, error } = useQuery<
+    Array<AnimalShelter>,
+    Error
+  >("animalData", fetchAnimalData);
+
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 16;
+  const ITEMS_PER_PAGE = 16;
   const [selectedBeginDate, setSelectedBeginDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedBreed, setSelectedBreed] = useState("");
 
-  useEffect(() => {
-    const fetchDataFromApi = async () => {
-      try {
-        setError(null);
-        setLoading(true);
-        const fetchedData = await fetchAnimalData();
-        console.log("fetchedData", fetchedData);
-
-        setData(fetchedData); // 첫 페이지에서 필요한 것만 GET
-      } catch (e: Error | unknown) {
-        if (e instanceof Error) {
-          setError(e);
-        } else {
-          setError(new Error("An error occurred"));
-        }
-      }
-      setLoading(false);
-    };
-    fetchDataFromApi();
-  }, []);
-
   const handleFilter = () => {
     setCurrentPage(1);
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-  if (!data) return null;
+  if (isLoading) return <div>Loading...</div>;
+  if (isError || !data) {
+    const errorMessage = isError ? error?.message : "An error occurred";
+    return <div>Error: {errorMessage}</div>;
+  }
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
-  const nearingDeadline = data.filter((item) => {
+  // 나머지 코드는 그대로 유지
+  const nearingDeadline = data.filter((item: AnimalShelter) => {
     const today = new Date();
     const endOfNotice = new Date(formatDate(item.PBLANC_END_DE));
     const fiveDaysAfter = new Date(today);
@@ -60,7 +42,7 @@ function Home() {
     return endOfNotice <= fiveDaysAfter;
   });
 
-  const filteredItems = data.filter((item) => {
+  const AnimalsItems = data.filter((item: AnimalShelter) => {
     let matchesDate = true;
     let matchesLocation = true;
     let matchesBreed = true;
@@ -80,7 +62,9 @@ function Home() {
     return matchesDate && matchesLocation && matchesBreed;
   });
 
-  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
+  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
+  const currentItems = AnimalsItems.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <FavoritesProvider>
@@ -119,7 +103,7 @@ function Home() {
         {/* 페이지네이션 컴포넌트 추가 */}
         <Pagination
           currentPage={currentPage}
-          totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
+          totalPages={Math.ceil(AnimalsItems.length / ITEMS_PER_PAGE)}
           setCurrentPage={setCurrentPage}
         />
       </Div>
@@ -146,14 +130,9 @@ const Div = styled.div`
 `;
 
 const Container = styled.div`
-  // display: flex;
-  // flex-wrap: wrap;
-  // justify-content: space-between;
-  // margin: 50px;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  // margin: 100px;
-  grid-template-columns: repeat(3, 1fr); /* 세 개의 컬럼으로 그리드 설정 */
-  gap: 30px; /* 컬럼 간의 간격 */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
 `;
