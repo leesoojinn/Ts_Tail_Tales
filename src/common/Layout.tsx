@@ -1,176 +1,166 @@
-import React, { useEffect, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
-import { supabase } from "../supabase";
-import { User } from "@supabase/supabase-js";
-import styled from "styled-components";
-function Layout() {
-  const [user, setUser] = useState<User | null>(null);
-  const [userNickname, setUserNickname] = useState<string | null>(null);
-  useEffect(() => {
-    const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
-      const nickname =
-        parsedUser.user_metadata.user_name ||
-        parsedUser.user_metadata.full_name;
-      setUserNickname(nickname);
-      if (parsedUser.email) {
-        sessionStorage.setItem("userEmail", parsedUser.email);
-      }
-      sessionStorage.setItem("userNickname", nickname);
-    }
-    const authSubscription = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === "SIGNED_IN" && session) {
-          const parsedUser = session.user;
-          setUser(parsedUser);
-          sessionStorage.setItem("user", JSON.stringify(parsedUser));
-          const nickname =
-            parsedUser.user_metadata.user_name ||
-            parsedUser.user_metadata.full_name;
-          setUserNickname(nickname);
-          if (parsedUser.email) {
-            sessionStorage.setItem("userEmail", parsedUser.email);
-          }
-          sessionStorage.setItem("userNickname", nickname);
-        } else if (event === "SIGNED_OUT") {
-          setUser(null);
-          sessionStorage.removeItem("user");
-          setUserNickname(null);
-          sessionStorage.removeItem("userNickname");
-          sessionStorage.removeItem("userEmail");
-        }
-      }
-    );
-    return () => {
-      authSubscription.data.subscription.unsubscribe();
-    };
-  }, []);
-  // 로그아웃 함수 정의
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setUserNickname(null);
-    // sessionStorage.removeItem("user");
-    // sessionStorage.removeItem("userNickname");
-    // sessionStorage.removeItem("userEmail");
-    alert("로그아웃 됐다~~~");
+import React, { useState } from "react";
+import { styled } from "styled-components";
+import { useQuery } from "react-query";
+import { fetchAnimalData, formatDate, AnimalShelter } from "../api/fetchData";
+import Category from "../components/Category";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import CustomSlider from "../components/Slider";
+import Pagination from "../components/Pagination";
+import { FavoritesProvider } from "../components/FavoritesContext";
+import PetCard from "../components/Petcard";
+
+function Home() {
+  const { data, isLoading, isError, error } = useQuery<
+    Array<AnimalShelter>,
+    Error
+  >("animalData", fetchAnimalData);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  // 1. useState가 너무 많다. -> useState 하나로 관리하면 편하지 않을까?
+  // ------------------------------
+  const [queries, setQueries] = useState({
+    selectedBeginDate: "",
+    selectedEndDate: "",
+    selectedLocation: "",
+    selectedBreed: "",
+  });
+
+  const changeHandler = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setQueries({
+      ...queries,
+      [name]: value,
+    });
+    handleFilter();
   };
-  // 로그인 버튼 렌더링 함수 정의
-  const renderLoginButton = () => {
-    if (user) {
-      return (
-        <Link
-          style={{
-            color: "black",
-            textDecoration: "none",
-          }}
-          to="/"
-          onClick={handleLogout}
-        >
-          로그아웃
-        </Link>
-      );
-    } else {
-      return (
-        <Link to="/login" style={{ color: "black", textDecoration: "none" }}>
-          로그인
-        </Link>
+  // ------------------------------
+  const [selectedBeginDate, setSelectedBeginDate] = useState("");
+  const [selectedEndDate, setSelectedEndDate] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedBreed, setSelectedBreed] = useState("");
+
+  const ITEMS_PER_PAGE = 16;
+
+  const handleFilter = () => {
+    setCurrentPage(1);
+  };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError || !data) {
+    const errorMessage = isError ? error?.message : "An error occurred";
+    return <div>Error: {errorMessage}</div>;
+  }
+
+  const nearingDeadline = data.filter((item: AnimalShelter) => {
+    const today = new Date();
+    const endOfNotice = new Date(formatDate(item.PBLANC_END_DE));
+    const fiveDaysAfter = new Date(today);
+    fiveDaysAfter.setDate(fiveDaysAfter.getDate() + 10);
+    return endOfNotice <= fiveDaysAfter;
+  });
+
+  const AnimalsItems = data.filter((item: AnimalShelter) => {
+    let matchesDate = true;
+    let matchesLocation = true;
+    let matchesBreed = true;
+    if (selectedBeginDate && selectedEndDate) {
+      matchesDate =
+        formatDate(item.RECEPT_DE) >= selectedBeginDate &&
+        formatDate(item.RECEPT_DE) <= selectedEndDate;
+    }
+    if (selectedLocation) {
+      matchesLocation = item.SIGUN_NM.toLowerCase().includes(
+        selectedLocation.toLowerCase()
       );
     }
-  };
+    if (selectedBreed) {
+      matchesBreed = item.SPECIES_NM.split("]")[0] + "]" === selectedBreed;
+    }
+    return matchesDate && matchesLocation && matchesBreed;
+  });
+
+  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
+  const currentItems = AnimalsItems.slice(indexOfFirstItem, indexOfLastItem);
+
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        position: "relative",
-        paddingBottom: "90px",
-        boxSizing: "border-box",
-      }}
-    >
-      <Header>
-        <LogoLink to="/">TailTales</LogoLink>
-        <HeaderContent>
-          {user && userNickname ? (
-            <UserContainer>
-              <UserImage>
-                <img
-                  src={
-                    user?.user_metadata.avatar_url ||
-                    process.env.PUBLIC_URL + "/image/profile.jpg"
-                  }
-                  alt="User Avatar"
-                />
-              </UserImage>
-              <UserName>
-                {userNickname && (
-                  <span>
-                    <Link to={`/mypage/${user.id}`}>{userNickname}님</Link>,
-                    환영합니다!
-                  </span>
-                )}
-                {!userNickname && user?.user_metadata.full_name && (
-                  <span>
-                    {`${user?.user_metadata.full_name}님`}, 환영합니다!
-                  </span>
-                )}
-              </UserName>
-            </UserContainer>
-          ) : null}
-          <Link to="/home">기다리는 친구들 |</Link>
-          <Link to="/community">커뮤니티 |</Link>
-          {renderLoginButton()}
-        </HeaderContent>
-      </Header>
-      <div style={{ paddingTop: "80px" }}>
-        <Outlet />
-      </div>
-    </div>
+    <FavoritesProvider>
+      <Div>
+        <div className="filtered">
+          <span className="deadline">"공고 마감일"</span>이 얼마 남지 않은
+          아이들!
+        </div>
+        <CustomSlider items={nearingDeadline} />
+        <Category
+          query={{
+            PBLANC_BEGIN_DE: queries.selectedBeginDate,
+            PBLANC_END_DE: queries.selectedEndDate,
+            SIGUN_NM: queries.selectedLocation,
+            SPECIES_NM: queries.selectedBreed,
+          }}
+          // onChange={(e) => {
+          //   const { name, value } = e.target;
+          //   if (name === "PBLANC_BEGIN_DE") {
+          //     setSelectedBeginDate(value);
+          //   } else if (name === "PBLANC_END_DE") {
+          //     setSelectedEndDate(value);
+          //   } else if (name === "SIGUN_NM") {
+          //     setSelectedLocation(value);
+          //   } else if (name === "SPECIES_NM") {
+          //     setSelectedBreed(value);
+          //   }
+          //   handleFilter();
+          // }}
+          onChange={changeHandler}
+        />
+        <Container>
+          {currentItems?.map((item: AnimalShelter) => (
+            <PetCard key={item.ABDM_IDNTFY_NO} item={item} />
+          ))}
+        </Container>
+        {/* 페이지네이션 컴포넌트 추가 */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(AnimalsItems.length / ITEMS_PER_PAGE)}
+          setCurrentPage={setCurrentPage}
+        />
+      </Div>
+    </FavoritesProvider>
   );
 }
-export default Layout;
-const Header = styled.header`
-  position: fixed;
-  height: 30px;
+
+export default Home;
+
+const Div = styled.div`
+  background-color: #ffeaea;
+  position: relative;
+  position: absolute;
+  top: 0;
   left: 0;
   right: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24px;
-  background-color: #746464;
-  color: white;
-  z-index: 1000;
-`;
-const LogoLink = styled(Link)`
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 30px;
-`;
-const HeaderContent = styled.div`
-  display: flex;
-  gap: 12px;
-  align-items: center;
-`;
-const UserContainer = styled.div`
-  display: flex;
-  align-items: center;
-`;
-const UserImage = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin-right: 10px;
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  bottom: 0;
+  height: 100vh;
+
+  .filtered {
+    font-size: 2em;
+    display: flex;
+    justify-content: center;
+    padding: 100px 0 15px 0;
+  }
+
+  .deadline {
+    font-weight: bolder;
+    color: red;
   }
 `;
-const UserName = styled.span`
-  color: white;
-  font-weight: bold;
+
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
 `;

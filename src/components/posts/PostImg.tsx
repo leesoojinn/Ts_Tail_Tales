@@ -56,11 +56,9 @@ export default function PostImg({ onContentChange, initialContent }: PostImgProp
 
     input.onchange = async () => {
       const file = input.files?.[0];
-
       if (file) {
         try {
           const imageUrl = await uploadImageToSupabase(file);
-          console.log("URL 이름 :", imageUrl);
 
           const quillEditor = quillRef.current?.getEditor();
           const range = quillEditor?.getSelection();
@@ -91,10 +89,10 @@ export default function PostImg({ onContentChange, initialContent }: PostImgProp
         style={{
           width: "100%",
           height: "90%",
-          borderRadius: "20px",
         }}
         value={content}
         onChange={handleContentChange}
+        placeholder="내용을 입력해주세요"
         ref={(el) => {
           if (el) {
             quillRef.current = el;
@@ -115,6 +113,4 @@ const PostImgContainer = styled.div`
   width: 1000px;
   height: 450px;
   margin-bottom: 50px;
-  border: 1px solid #ccc;
-  border-radius: 8px; /* 테두리 둥글게 처리 */
 `;

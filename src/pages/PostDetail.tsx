@@ -35,7 +35,6 @@ export default function PostDetail() {
 
     return data;
   });
-  console.log("detailpostid", post);
 
   // 댓글 목록 가져오기
   const { data: comments, isLoading: isLoadingComments } = useQuery(["comments", id], async () => {
@@ -88,10 +87,7 @@ export default function PostDetail() {
   return (
     <OuterContainer>
       <Container>
-        <BackButton
-          onClick={() => navigate("/community")}
-          className="backbutton"
-        >
+        <BackButton onClick={() => navigate("/community")} className="backbutton">
           <BackIcon className="backicon">&lt;</BackIcon>
         </BackButton>
 
@@ -118,6 +114,12 @@ export default function PostDetail() {
     </OuterContainer>
   );
 }
+
+const OuterContainer = styled.div`
+  background-color: #fdfaf6;
+  display: flex;
+  justify-content: center;
+`;
 
 const BackButton = styled.button`
   padding: 10px 20px;
@@ -154,11 +156,6 @@ const Container = styled.div`
   /* margin: 0 auto; */ /* 이 부분을 제거합니다. */
   /* padding: 0 1rem; */ /* 이 부분을 제거합니다. */
 `;
-const OuterContainer = styled.div`
-  background-color: #fdfaf6;
-  display: flex;
-  justify-content: center;
-`;
 
 const UserInfo = styled.p`
   text-align: center;
@@ -167,13 +164,14 @@ const UserInfo = styled.p`
 
 const Title = styled.h3`
   border: 1px solid #fdfaf6;
-  border-radius: 8px;
+  border-radius: 3px;
   padding: 10px;
   font-size: 32px;
   text-align: center;
   margin: 20px 0;
   background-color: white;
   border-radius: 20px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 `;
 
 const Content = styled.div`
@@ -185,6 +183,7 @@ const Content = styled.div`
   padding: 20px; /* 내용의 안쪽 여백 조정 */
   background-color: white;
   border-radius: 20px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 `;
 
 const ButtonContainer = styled.div`

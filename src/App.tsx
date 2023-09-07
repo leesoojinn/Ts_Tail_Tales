@@ -5,7 +5,7 @@ import Layout from "./common/Layout";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import Mypage from "./pages/Mypage";
-import Main from "./pages/Main";
+import Landing from "./pages/Landing";
 import PostCreate from "./pages/PostCreate";
 import PostEdit from "./pages/PostEdit";
 import Community from "./pages/Community";
@@ -19,7 +19,7 @@ function App() {
     <FavoritesProvider>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<Main />} />
+          <Route path="/" element={<Landing />} />
           <Route path="/home" element={<Home />} />
           <Route path="/detail/:id" element={<Detail />} />
           <Route path="/create" element={<PostCreate />} />

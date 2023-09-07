@@ -17,11 +17,32 @@ function Home() {
   >("animalData", fetchAnimalData);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 16;
+  // 1. useState가 너무 많다. -> useState 하나로 관리하면 편하지 않을까?
+  // ------------------------------
+  const [queries, setQueries] = useState({
+    selectedBeginDate: "",
+    selectedEndDate: "",
+    selectedLocation: "",
+    selectedBreed: "",
+  });
+
+  const changeHandler = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setQueries({
+      ...queries,
+      [name]: value,
+    });
+    handleFilter();
+  };
+  // ------------------------------
   const [selectedBeginDate, setSelectedBeginDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedBreed, setSelectedBreed] = useState("");
+
+  const ITEMS_PER_PAGE = 16;
 
   const handleFilter = () => {
     setCurrentPage(1);
@@ -33,7 +54,6 @@ function Home() {
     return <div>Error: {errorMessage}</div>;
   }
 
-  // 나머지 코드는 그대로 유지
   const nearingDeadline = data.filter((item: AnimalShelter) => {
     const today = new Date();
     const endOfNotice = new Date(formatDate(item.PBLANC_END_DE));
@@ -76,24 +96,25 @@ function Home() {
         <CustomSlider items={nearingDeadline} />
         <Category
           query={{
-            PBLANC_BEGIN_DE: selectedBeginDate,
-            PBLANC_END_DE: selectedEndDate,
-            SIGUN_NM: selectedLocation,
-            SPECIES_NM: selectedBreed,
+            PBLANC_BEGIN_DE: queries.selectedBeginDate,
+            PBLANC_END_DE: queries.selectedEndDate,
+            SIGUN_NM: queries.selectedLocation,
+            SPECIES_NM: queries.selectedBreed,
           }}
-          onChange={(e) => {
-            const { name, value } = e.target;
-            if (name === "PBLANC_BEGIN_DE") {
-              setSelectedBeginDate(value);
-            } else if (name === "PBLANC_END_DE") {
-              setSelectedEndDate(value);
-            } else if (name === "SIGUN_NM") {
-              setSelectedLocation(value);
-            } else if (name === "SPECIES_NM") {
-              setSelectedBreed(value);
-            }
-            handleFilter();
-          }}
+          // onChange={(e) => {
+          //   const { name, value } = e.target;
+          //   if (name === "PBLANC_BEGIN_DE") {
+          //     setSelectedBeginDate(value);
+          //   } else if (name === "PBLANC_END_DE") {
+          //     setSelectedEndDate(value);
+          //   } else if (name === "SIGUN_NM") {
+          //     setSelectedLocation(value);
+          //   } else if (name === "SPECIES_NM") {
+          //     setSelectedBreed(value);
+          //   }
+          //   handleFilter();
+          // }}
+          onChange={changeHandler}
         />
         <Container>
           {currentItems?.map((item: AnimalShelter) => (
@@ -115,12 +136,19 @@ export default Home;
 
 const Div = styled.div`
   background-color: #ffeaea;
+  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
 
   .filtered {
     font-size: 2em;
     display: flex;
     justify-content: center;
-    padding: 15px 0 15px 0;
+    padding: 100px 0 15px 0;
   }
 
   .deadline {

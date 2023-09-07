@@ -3,47 +3,33 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import styled from "styled-components";
 import PostImg from "../components/posts/PostImg";
-import { supabase } from "../supabase"; // Supabase 클라이언트 임포트
+import { supabase } from "../supabase";
 import { FiArrowLeft } from "react-icons/fi";
-
-interface Post {
-  id: number;
-  title: string;
-  content: string;
-  date: string;
-  userNickname: string;
-}
 
 export default function PostEdit() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
-  // 게시물 데이터를 불러오는 쿼리
   const { data, isLoading, isError, error } = useQuery(["posts", id], async () => {
     const { data } = await supabase.from("posts").select("*").eq("id", id).single();
 
     return data;
   });
-  console.log("data", data);
 
-  // 게시물 삭제를 처리하는 뮤테이션
   const deletePost = useMutation(
     async () => {
       await supabase.from("posts").delete().eq("id", id);
     },
     {
       onSuccess: () => {
-        // 삭제 성공 후 게시글 추가 로직을 수행합니다.
         handleAddNewPost();
         queryClient.invalidateQueries(["posts", id]);
       },
     }
   );
 
-  // 게시글 추가를 처리하는 함수
   const handleAddNewPost = async () => {
-    // 사용자 정보 가져오기
     const storedUser = sessionStorage.getItem("user");
     if (!storedUser) {
       console.error("사용자 정보가 없습니다.");
@@ -58,64 +44,55 @@ export default function PostEdit() {
       return;
     }
 
-    // 업데이트할 게시물 객체 생성
     const updatedPost: any = {
-      // any 타입으로 변경
       id: data.id,
       title,
       content,
       date: data.date || new Date().toISOString(),
-      userNickname, // 상태로부터 사용자 닉네임 가져옴
-      email: userEmail, // 사용자 이메일 추가
+      userNickname,
+      email: userEmail,
     };
 
-    // 게시물 추가 뮤테이션 실행
     await supabase.from("posts").upsert([updatedPost]);
   };
 
-  // 컴포넌트 상태
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [userNickname, setUserNickname] = useState(""); // 사용자 닉네임 상태 추가
+  const [userNickname, setUserNickname] = useState("");
 
-  // 데이터 로딩 후 게시물 정보를 상태로 설정
   useEffect(() => {
     if (data) {
       setTitle(data.title);
       setContent(data?.content);
     }
 
-    // 사용자 닉네임을 가져와서 상태 업데이트
     const userNicknameFromSessionStorage = sessionStorage.getItem("userNickname");
     if (userNicknameFromSessionStorage) {
       setUserNickname(userNicknameFromSessionStorage);
     }
   }, [data]);
 
-  // 제목 변경 핸들러
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
 
-  // 내용 변경 핸들러
   const handleContentChange = (newContent: string) => {
     setContent(newContent);
   };
 
-  // 수정 버튼 클릭 핸들러
   const handleUpdate = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!title && !content) {
-      window.alert("제목을 입력해주세요, 내용을 입력해주세요.");
+      alert("제목을 입력해주세요, 내용을 입력해주세요.");
       return;
     }
     if (!title) {
-      window.alert("제목을 입력해주세요.");
+      alert("제목을 입력해주세요.");
       return;
     }
     if (!content) {
-      window.alert("내용을 입력해주세요.");
+      alert("내용을 입력해주세요.");
       return;
     }
 
@@ -123,7 +100,6 @@ export default function PostEdit() {
 
     if (inCinfirmed) deletePost.mutate();
 
-    // 수정이 완료되면 PostDetail 페이지로 돌아감
     navigate(`/post-detail/${id}`);
   };
 
@@ -143,7 +119,7 @@ export default function PostEdit() {
     <Container>
       <BackButton
         onClick={() => {
-          window.history.back();
+          navigate(`/post-detail/${id}`);
         }}
       >
         <BackIcon />

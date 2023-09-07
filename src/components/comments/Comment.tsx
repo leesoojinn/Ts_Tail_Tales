@@ -27,11 +27,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
   } = useQuery(
     ["comments", id],
     async () => {
-      const { data, error } = await supabase
-        .from("comments")
-        .select("*")
-        .eq("postId", id)
-        .order("date", { ascending: true });
+      const { data, error } = await supabase.from("comments").select("*").eq("postId", id).order("date", { ascending: true });
 
       if (error) {
         throw error;
@@ -50,17 +46,15 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
       setUser(JSON.parse(storedUser));
     }
 
-    const authSubscription = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === "SIGNED_IN" && session) {
-          setUser(session.user);
-          sessionStorage.setItem("user", JSON.stringify(session.user));
-        } else if (event === "SIGNED_OUT") {
-          setUser(null);
-          sessionStorage.removeItem("user");
-        }
+    const authSubscription = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        setUser(session.user);
+        sessionStorage.setItem("user", JSON.stringify(session.user));
+      } else if (event === "SIGNED_OUT") {
+        setUser(null);
+        sessionStorage.removeItem("user");
       }
-    );
+    });
 
     return () => {
       authSubscription.data.subscription.unsubscribe();
@@ -89,10 +83,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
   const indexOfLastComment = currentPage * itemsPerPage;
   const indexOfFirstComment = indexOfLastComment - itemsPerPage;
 
-  const currentComments = commentData!.slice(
-    indexOfFirstComment,
-    indexOfLastComment
-  );
+  const currentComments = commentData!.slice(indexOfFirstComment, indexOfLastComment);
 
   if (isLoading) {
     return <div>로딩 중 ...</div>;
@@ -103,13 +94,10 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
   }
 
   if (!commentData) {
-    console.log("commentData is empty or undefined:", commentData);
     return <div>게시물을 찾을 수 없습니다.</div>;
   }
 
   const email = sessionStorage.getItem("userEmail")?.toLowerCase();
-
-  console.log("user", user);
 
   return (
     <div>
@@ -132,7 +120,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                   }}
                 >
                   <img
-                    src={comment.avatar_url || "/image/profile.jpg"}
+                    src={comment.avatar_url || "/image/header/profile.jpg"}
                     alt="User Avatar"
                     style={{
                       width: "100%",
@@ -142,13 +130,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                   />
                 </div>
                 <div style={{ flex: 1 }}>
-                  {email === comment.email ? (
-                    <strong style={{ color: "#f8b3b3" }}>
-                      {comment.userNickname || "익명"}
-                    </strong>
-                  ) : (
-                    <strong>{comment.userNickname || "익명"}</strong>
-                  )}
+                  {email === comment.email ? <strong style={{ color: "#f8b3b3" }}>{comment.userNickname || "익명"}</strong> : <strong>{comment.userNickname || "익명"}</strong>}
 
                   <br />
                   <span style={{ color: "gray" }}>
@@ -163,12 +145,8 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                 </div>
                 {email === comment.email && (
                   <div style={{ marginLeft: "auto" }}>
-                    <EditButton onClick={() => setEditingCommentId(comment.id)}>
-                      수정
-                    </EditButton>
-                    <DeleteButton onClick={() => handleDelete(comment.id)}>
-                      삭제
-                    </DeleteButton>
+                    <EditButton onClick={() => setEditingCommentId(comment.id)}>수정</EditButton>
+                    <DeleteButton onClick={() => handleDelete(comment.id)}>삭제</DeleteButton>
                   </div>
                 )}
               </div>
@@ -191,11 +169,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
               )}
             </CommentContainer>
           ))}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={Math.ceil(commentData.length / itemsPerPage)}
-            setCurrentPage={handlePageChange}
-          />
+          <Pagination currentPage={currentPage} totalPages={Math.ceil(commentData.length / itemsPerPage)} setCurrentPage={handlePageChange} />
         </>
       )}
     </div>
@@ -204,13 +178,12 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
 
 const CommentContainer = styled.div`
   border-radius: 8px;
-  padding: 20px;
-  box-shadow: 2px 2px 5px #e0dbd6(0, 0, 0, 0.2);
+  padding: 10px 0 0 20px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
   background-color: white;
   border: 1px solid #fdfaf6;
 `;
-
 const EditButton = styled.button`
   background-color: #bdb7b0;
   color: white;

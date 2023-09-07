@@ -5,6 +5,7 @@ import { supabase } from "../supabase";
 import styled from "styled-components";
 import { FiArrowLeft } from "react-icons/fi";
 import Pagination from "../components/Pagination";
+import { useNavigate } from "react-router-dom";
 
 function Mypage() {
   const [userEmail, setUserEmail] = useState("");
@@ -14,6 +15,8 @@ function Mypage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
+  const navigate = useNavigate();
+
   const handlePageChange = (newPage: number): void => {
     setCurrentPage(newPage);
   };
@@ -21,16 +24,12 @@ function Mypage() {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-  const currentFavoriteAnimals = favoriteAnimals.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
+  const currentFavoriteAnimals = favoriteAnimals.slice(indexOfFirstItem, indexOfLastItem);
 
   useEffect(() => {
     // 유저 정보 가져오기
     const getUserInfo = async () => {
-      const { data: userData, error: userError } =
-        await supabase.auth.getUser();
+      const { data: userData, error: userError } = await supabase.auth.getUser();
 
       if (userError) {
         console.error("Error getting user:", userError);
@@ -51,7 +50,6 @@ function Mypage() {
         setError(null);
         setLoading(true);
         const fetchedData = await fetchAnimalData();
-        console.log("fetchedData", fetchedData);
 
         // 데이터가 존재하지 않을 경우에만 API 요청
         if (favoriteAnimals.length === 0) {
@@ -60,10 +58,7 @@ function Mypage() {
         }
 
         // 사용자의 즐겨찾기 정보 가져오기
-        const { data: favoriteData, error: favoriteError } = await supabase
-          .from("favorites")
-          .select("animalId")
-          .eq("email", userEmail);
+        const { data: favoriteData, error: favoriteError } = await supabase.from("favorites").select("animalId").eq("email", userEmail);
 
         if (favoriteError) {
           console.error("사용자 즐겨찾기 항목 가져오기 오류:", favoriteError);
@@ -73,9 +68,7 @@ function Mypage() {
         const favoriteAnimalIds = favoriteData.map((fav: any) => fav.animalId);
 
         // 사용자의 즐겨찾기한 동물 정보 필터링
-        const favoriteAnimalsWithEmail = fetchedData.filter((item: any) =>
-          favoriteAnimalIds.includes(item.ABDM_IDNTFY_NO)
-        );
+        const favoriteAnimalsWithEmail = fetchedData.filter((item: any) => favoriteAnimalIds.includes(item.ABDM_IDNTFY_NO));
 
         setFavoriteAnimals(favoriteAnimalsWithEmail);
       } catch (e: Error | unknown) {
@@ -94,9 +87,7 @@ function Mypage() {
   }, [userEmail]);
 
   const removeFavorite = (animalId: string) => {
-    setFavoriteAnimals((prevFavorites) =>
-      prevFavorites.filter((item) => item.ABDM_IDNTFY_NO !== animalId)
-    );
+    setFavoriteAnimals((prevFavorites) => prevFavorites.filter((item) => item.ABDM_IDNTFY_NO !== animalId));
   };
 
   return (
@@ -105,7 +96,7 @@ function Mypage() {
         <Title>My Page</Title>
         <BackButton
           onClick={() => {
-            window.history.back();
+            navigate("/home");
           }}
         >
           <BackIcon />
@@ -131,11 +122,7 @@ function Mypage() {
       </MyPage>
       {!loading && (
         <PaginationContainer>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={Math.ceil(favoriteAnimals.length / itemsPerPage)}
-            setCurrentPage={handlePageChange}
-          />
+          <Pagination currentPage={currentPage} totalPages={Math.ceil(favoriteAnimals.length / itemsPerPage)} setCurrentPage={handlePageChange} />
         </PaginationContainer>
       )}
     </>
