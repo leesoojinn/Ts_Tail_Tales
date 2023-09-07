@@ -81,10 +81,22 @@ function Login() {
           <h2>TailTales</h2>
           <form onSubmit={signInWithEmail}>
             <div>
-              <input type="email" id="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <input
+                type="email"
+                id="email"
+                placeholder="이메일"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
             <div>
-              <input type="password" id="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} />
+              <input
+                type="password"
+                id="password"
+                placeholder="비밀번호"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
             <div>
               <button>로그인</button>
@@ -93,10 +105,18 @@ function Login() {
           <p>소셜 로그인</p>
           <div>
             <StKakaoLoginBtn onClick={loginWithKakao}>
-              <img className="kakaoimg" src="/image/social/kakao.png" alt="Kakao Login" />
+              <img
+                className="kakaoimg"
+                src="/image/social/kakao.png"
+                alt="Kakao Login"
+              />
             </StKakaoLoginBtn>
             <StGoolgeLoginBtn onClick={loginWithGoogle}>
-              <img className="googleimg" src="/image/social/google.png" alt="Google Login" />
+              <img
+                className="googleimg"
+                src="/image/social/google.png"
+                alt="Google Login"
+              />
             </StGoolgeLoginBtn>
           </div>
           <NoAccountMessage>
@@ -205,7 +225,7 @@ const RightSide = styled.div`
   }
 `;
 
-//--------------
+//----------------------------------------
 
 const StKakaoLoginBtn = styled.button`
   background: none;
