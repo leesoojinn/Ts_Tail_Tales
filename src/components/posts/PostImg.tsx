@@ -83,12 +83,15 @@ export default function PostImg({
     };
   };
 
-  useEffect(() => {
-    if (quillRef.current) {
-      const toolbar = quillRef.current.getEditor().getModule("toolbar");
-      toolbar.addHandler("image", handleImage);
+  const handleDeleteImage = () => {
+    const quillEditor = quillRef.current?.getEditor();
+    const range = quillEditor?.getSelection();
+
+    if (quillEditor && range) {
+      const index = range.index || 0;
+      quillEditor.deleteText(index, 1, "user");
     }
-  }, []);
+  };
 
   return (
     <PostImgContainer>
