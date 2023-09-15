@@ -1,46 +1,140 @@
-# Getting Started with Create React App
+<img src="https://capsule-render.vercel.app/api?type=wave&color=auto&height=300&section=header&text=Tail%20Tales&fontSize=90" />
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 😻Tail Tales🐶
 
-## Available Scripts
+<div align="center">
+<img src ="https://github.com/leesoojinn/Ts_Tail_Tales/assets/133640361/e6bb98b8-39c0-4baf-9915-22128115f634"/>
+</div>
 
-In the project directory, you can run:
+## 🖥️ 프로젝트 소개
 
-### `yarn start`
+TaileTales는 유기동물들의 새로운 삶과 행복한 이야기라는 의미를 가지고 있습니다. 또한 강아지와 고양이의 기분을 나타내는 중요한 꼬리를 의미하기도 합니다.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+TaileTales는 유기동물들이 새로운 가정에서 행복한 이야기를 나누는 곳으로 역할을 합니다.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+경기도 데이터 드림의 유기동물 보호 현황 Open API를 사용하여 경기도 지역의 유기 동물을 시군구, 공고일, 품종에 따라 조회하고 현재 위치에서 가까운 보호소를 찾는 서비스는 동물 복지와 지역사회에 긍정적인 영향을 미칠 수 있는 유용한 서비스입니다
 
-### `yarn test`
+## 프로젝트 목표
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+TaileTales는 다음과 같은 목표를 추구합니다.
 
-### `yarn build`
+### 동물 복지 강화
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+유기 동물 보호 현황을 조회하고 가족을 찾을 수 있도록 함으로써, 유기 동물들에게 안전하고 사랑을 줄 수 있는 기회를 제공합니다.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 지역사회 기여
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+지역 사회 내에서 유기 동물 문제를 해결하고 동물 복지를 증진하여 지역사회의 품격과 삶의 질을 향상시킬 수 있습니다.
 
-### `yarn eject`
+### 편의성 제공
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+사용자는 간편하게 유기 동물의 정보를 검색하고 가까운 보호소를 찾을 수 있어, 입양 절차를 보다 쉽게 진행할 수 있습니다.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 데이터 활용
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+공공 데이터를 활용하여 유기 동물 관련 정보를 제공함으로써, 공공 데이터의 가치를 높이고 활용하는 좋은 사례로 나타낼 수 있습니다.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## 사이트 주소
 
-## Learn More
+## 🕰️ 개발 기간
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- 23.08.16 - 23.09.18
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 🧑‍🤝‍🧑 멤버 구성 - 팀명 : 내재산 1조
+
+- 팀원1 : 이수진 - 리더
+- 팀원2 : 이예지 - 부리더
+- 팀원3 : 안치훈 - 팀원
+- 팀원4 : 도지은 - 팀원
+- 팀원5 : 김윤지 - 디자이너
+
+🎬 LIVE DEMO
+
+## https://ts-tail-tales.vercel.app/
+
+### ⚙️ 기술스택
+
+- React
+- typescript
+- styled-components
+<div align=“center”>
+    <img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=git&logoColor=white">
+   <img src="https://img.shields.io/badge/typescript-764ABC?style=for-the-badge&logo=git&logoColor=white">  
+   <img src="https://img.shields.io/badge/styledcomponents-DB7093?style=for-the-badge&logo=git&logoColor=white">
+</div>
+
+### ⚙️ 사용한 라이브러리
+
+- react-router-dom
+- axios
+- DOMPurify
+- react-quill
+- React Router Dom
+<div align=“center”>
+  <img src="https://img.shields.io/badge/createreactapp-09D3AC?style=for-the-badge&logo=git&logoColor=white">
+  <img src="https://img.shields.io/badge/axios-764ABC?style=for-the-badge&logo=git&logoColor=white">  
+  <img src="https://img.shields.io/badge/reactrouter-CA4245?style=for-the-badge&logo=git&logoColor=white">
+   <img src="https://img.shields.io/badge/React Router Dom-F24E1E?style=for-the-badge&logo=slack&logoColor=white">
+</div>
+
+### ⚙️ 사용한 API
+
+<div align=“center”>
+ <img src="https://img.shields.io/badge/SupaBase-FFCA28?style=for-the-badge&logo=git&logoColor=white">
+  <img src="https://img.shields.io/badge/Kakao maps-FFCA28?style=for-the-badge&logo=git&logoColor=white">
+</div>
+
+### ⚙️ 버전 관리 시스템
+
+- Git/Github
+<div align=“center”>
+ <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
+ <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
+ <img src="https://img.shields.io/badge/sourcetree-0052CC?style=for-the-badge&logo=github&logoColor=white">
+</div>
+
+### ⚙️ 협업툴
+
+- Visual Studio
+- Slack
+- Figma
+<div align=“center”>
+ <img src="https://img.shields.io/badge/visualstudio-5C2D91?style=for-the-badge&logo=visualstudio&logoColor=white">
+ <img src="https://img.shields.io/badge/slack-4A154B?style=for-the-badge&logo=slack&logoColor=white">
+ <img src="https://img.shields.io/badge/figma-F24E1E?style=for-the-badge&logo=slack&logoColor=white">
+</div>
+
+⚙️ 배포
+
+- Vercel
+<div align=“center”>
+	  <img src="https://img.shields.io/badge/vercel-000000?style=for-the-badge&logo=vercel&logoColor=white">
+  </div>
+
+## 📌 주요 기능
+
+#### 소셜로그인
+
+- Google 로그인 처리
+- Kakao 로그인 처리
+
+#### 유기동물 검색
+
+- 경기도 데이터 드림의 유기동물 보호 현황 Open API 를 이용해 최신 유기동물 정보 처리
+- 시군구, 공고일, 품종에 따른 필터링 기능
+
+#### 디테일 페이지
+
+- 유기동물 정보를 조금더 자세하게 확인 가능
+- 만나러 가는길 버튼을 통해 kakao 네비게이션으로 바로 이동
+- 모바일에서 입양 문의 버튼을 누르면 해당 보호소로 바로 전화 할수있는 기능
+
+#### 커뮤니티
+
+- 게시글 작성 기능을통해 입양 후기 작성가능
+- 댓글 CRUD 기능
+
+#### 마이페이지
+
+- 즐겨찾기를 기능을 통해 마이페이지에서 즐겨찾기한 동물 데이터 모아보기 기능
+- 프로필 이미지 변경 기능을통해 프로필 변경 기능

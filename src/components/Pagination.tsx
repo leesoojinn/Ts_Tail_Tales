@@ -12,12 +12,12 @@ function Pagination({ currentPage, totalPages, setCurrentPage }: PaginationProps
   const nextPage = currentPage < totalPages ? currentPage + 1 : null;
 
   const handlePageClick = (page: number) => {
+    // 먼저 스크롤을 현재 위치로 유지
+    window.scrollTo({});
+
+    // 그 다음 페이지를 설정
     setCurrentPage(page);
   };
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [currentPage]);
 
   const renderPageNumbers = () => {
     const pageNumbers = [];
