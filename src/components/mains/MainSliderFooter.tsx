@@ -13,7 +13,7 @@ function MainSliderFooter() {
       name: "이예지",
       githubLink: "https://github.com/nna-na",
       blogLink: "https://velog.io/@yellog",
-      imageSrc: "/image/footer/LSJ.jpg",
+      imageSrc: "/image/footer/LYJ.jpg?raw=true",
     },
     {
       name: "안치훈",

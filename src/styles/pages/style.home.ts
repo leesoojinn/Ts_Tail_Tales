@@ -76,6 +76,10 @@ export const FilteredSection = styled.div`
     .highlighted {
       white-space: nowrap;
     }
+
+    @media (max-width: 375px) {
+      font-size: 1.7em;
+    }
   }
 `;
 
@@ -103,6 +107,10 @@ export const NewLifeSection = styled.div`
 
     .highlighted {
       white-space: nowrap;
+    }
+
+    @media (max-width: 375px) {
+      font-size: 1.7em;
     }
   }
 `;

@@ -75,7 +75,7 @@ function Home() {
       <S.Div>
         <S.FilteredSection>
           <span className="highlighted">마감일</span>이 얼마 남지 않았습니다.
-        </S.FilteredSection>{" "}
+        </S.FilteredSection>
         <CustomSlider items={nearingDeadline} />
         <Category
           query={{
