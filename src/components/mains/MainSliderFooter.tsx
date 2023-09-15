@@ -41,7 +41,10 @@ function MainSliderFooter() {
         <p className="p-1">유기동물방지 분양입양 TailTales 보호소</p>
         <p>Company Name (주)테일테일즈</p>
         <p>사업자등록번호 : 0000-0000</p>
-        <p className="p-2">리더: 이수진 | 부리더: 이예지 | 팀원: 안치훈 | 팀원: 도지은 | 디자이너: 김윤지</p>
+        <p className="p-2">
+          리더: 이수진 | 부리더: 이예지 | 팀원: 안치훈 | 팀원: 도지은 |
+          디자이너: 김윤지
+        </p>
         <p className="p-3">본사문의: tailtales@gmail.com</p>
         <p>Copyright 2023. 테일테일즈 all rights reserved.</p>
       </S.Text>
@@ -56,13 +59,27 @@ function MainSliderFooter() {
               <S.ImageDescription>{profile.name}</S.ImageDescription>
               <S.LinkGroup>
                 {profile.githubLink && (
-                  <S.GitHubLink href={profile.githubLink} target="_blank" rel="noopener noreferrer">
-                    <S.GitHubIcon src="/image/footer/git.png" alt="GitHub 아이콘" />
+                  <S.GitHubLink
+                    href={profile.githubLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <S.GitHubIcon
+                      src="/image/footer/git.png"
+                      alt="GitHub 아이콘"
+                    />
                   </S.GitHubLink>
                 )}
                 {profile.blogLink && (
-                  <S.BlogLink href={profile.blogLink} target="_blank" rel="noopener noreferrer">
-                    <S.BlogIcon src="/image/footer/blog.png" alt="블로그 아이콘" />
+                  <S.BlogLink
+                    href={profile.blogLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <S.BlogIcon
+                      src="/image/footer/blog.png"
+                      alt="블로그 아이콘"
+                    />
                   </S.BlogLink>
                 )}
               </S.LinkGroup>
