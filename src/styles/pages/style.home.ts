@@ -19,11 +19,9 @@ export const Div = styled.div`
     padding: 100px 0 15px 0;
     margin-top: 20px;
     margin-bottom: 30px;
-
-    &:before {
-      content: "새로운 삶 ";
-      color: #d73131;
-    }
+  }
+  .highlighted {
+    color: #d73131;
   }
 
   .deadline {
@@ -66,8 +64,7 @@ export const FilteredSection = styled.div`
   color: white;
   font-weight: bold;
 
-  &:before {
-    content: "공고 마감일 ";
+  .highlighted {
     color: #ffb9b9;
   }
 
