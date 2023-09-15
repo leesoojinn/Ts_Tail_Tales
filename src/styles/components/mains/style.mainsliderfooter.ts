@@ -31,10 +31,8 @@ export const Content = styled.div`
   align-items: center;
   justify-content: center;
 
-  @media (max-width: 1349px) {
-    width: 90%;
-    overflow-x: auto;
-    justify-content: flex-start;
+  @media (max-width: 770px) {
+    display: none;
   }
 `;
 
@@ -49,17 +47,29 @@ export const Text = styled.div`
   .p-3 {
     margin-bottom: 30px;
   }
+
+  @media (max-width: 770px) {
+    margin-top: 200px;
+  }
 `;
 
 export const AboutUsText = styled.h2`
   text-align: center;
   margin-top: 5%;
+
+  @media (max-width: 770px) {
+    display: none;
+  }
 `;
 
 export const DottedLine = styled.div`
   width: 100%;
   height: 1px;
   border: 1px solid #e8e8e8;
+
+  @media (max-width: 770px) {
+    display: none;
+  }
 `;
 
 export const ImageDescriptionBox = styled.div`
