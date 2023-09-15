@@ -75,7 +75,7 @@ function Home() {
       <S.Div>
         <S.FilteredSection>
           <span className="highlighted">마감일</span>이 얼마 남지 않았습니다.
-        </S.FilteredSection>
+        </S.FilteredSection>{" "}
         <CustomSlider items={nearingDeadline} />
         <Category
           query={{
@@ -86,7 +86,6 @@ function Home() {
           }}
           onChange={changeHandler}
         />
-
         <S.NewLifeSection className="filtered">
           <span className="highlighted">새로운 삶</span>을 기다리는 친구들!
         </S.NewLifeSection>

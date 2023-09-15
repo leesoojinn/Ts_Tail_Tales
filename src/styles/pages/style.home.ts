@@ -13,7 +13,6 @@ export const Div = styled.div`
   height: 100%;
 
   .filtered {
-    font-size: 2.5em;
     display: flex;
     justify-content: center;
     padding: 100px 0 15px 0;
@@ -70,9 +69,13 @@ export const FilteredSection = styled.div`
 
   @media (max-width: 770px) {
     background-image: url("/image/homes/home3.jpg");
-    font-size: 2.2em;
+    font-size: 2em;
     justify-content: center;
     text-align: center;
+
+    .highlighted {
+      white-space: nowrap;
+    }
   }
 `;
 
@@ -93,10 +96,14 @@ export const NewLifeSection = styled.div`
   filter: brightness(0.7);
 
   @media (max-width: 770px) {
-    font-size: 2.2em;
+    font-size: 2em;
     justify-content: center;
     text-align: center;
     color: aliceblue;
+
+    .highlighted {
+      white-space: nowrap;
+    }
   }
 `;
 
