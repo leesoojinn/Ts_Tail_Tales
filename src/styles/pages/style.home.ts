@@ -69,16 +69,12 @@ export const FilteredSection = styled.div`
 
   @media (max-width: 770px) {
     background-image: url("/image/homes/home3.jpg");
-    font-size: 2em;
+    font-size: 1.7em;
     justify-content: center;
     text-align: center;
 
     .highlighted {
       white-space: nowrap;
-    }
-
-    @media (max-width: 375px) {
-      font-size: 1.7em;
     }
   }
 `;

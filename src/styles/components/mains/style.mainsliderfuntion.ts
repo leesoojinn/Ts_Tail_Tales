@@ -47,7 +47,7 @@ export const TitleText = styled.h1`
   margin-bottom: 7%;
 
   @media (max-width: 768px) {
-    font-size: 30px;
+    font-size: 1.7em;
   }
 `;
 
