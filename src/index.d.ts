@@ -14,7 +14,7 @@ declare module "react-full-page" {
     initialSlide?: number;
     duration?: number;
     controls?: boolean | React.FC<ControlComponentsProps>;
-    // controlProps?: any;
+
     controlProps?: string;
     beforeChange?: () => void;
     afterChange?: () => void;

@@ -4,19 +4,19 @@ import { useParams } from "react-router-dom";
 import Edit from "./Edit";
 import { supabase } from "../../supabase";
 import Pagination from "../Pagination";
-import styled from "styled-components";
 import usePageHook from "../../hooks/pageHook";
 import Swal from "sweetalert2";
+import * as S from "../../styles/components/comments/style.postcomment";
 
 interface CommentProps {
   comments?: string[];
   postId?: string;
 }
 
-export default function Comment({ comments: commentsProp }: CommentProps) {
+function Comment({ comments: commentsProp }: CommentProps) {
   const { id } = useParams<{ id: string }>();
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
-  const [deleted, setDeleted] = useState(false);
+  const [deleted] = useState(false);
   const queryClient = useQueryClient();
 
   const { currentPage, setCurrentPage, indexOfLastItem, indexOfFirstItem, itemsPerPage } = usePageHook(5);
@@ -41,24 +41,6 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
       enabled: !!id,
     }
   );
-
-  // const handleDelete = async (commentId: string) => {
-  //   if (window.confirm("정말 삭제?")) {
-  //     try {
-  //       await supabase.from("comments").delete().eq("id", commentId);
-  //       queryClient.invalidateQueries(["comments", id]);
-  //     } catch (error) {
-  //       Swal.fire({
-  //         position: "center",
-  //         icon: "error",
-  //         title: "댓글 삭제 오류",
-  //         showConfirmButton: false,
-  //         timerProgressBar: true,
-  //         timer: 3000,
-  //       });
-  //     }
-  //   }
-  // };
 
   const handleDelete = async (commentId: string) => {
     const result = await Swal.fire({
@@ -117,7 +99,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
       ) : (
         <>
           {currentComments?.map((comment) => (
-            <CommentContainer key={comment.id}>
+            <S.CommentContainer key={comment.id}>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <div
                   style={{
@@ -154,8 +136,8 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                 </div>
                 {email === comment.email && (
                   <div style={{ marginLeft: "auto" }}>
-                    <EditButton onClick={() => setEditingCommentId(comment.id)}>수정</EditButton>
-                    <DeleteButton onClick={() => handleDelete(comment.id)}>삭제</DeleteButton>
+                    <S.EditButton onClick={() => setEditingCommentId(comment.id)}>수정</S.EditButton>
+                    <S.DeleteButton onClick={() => handleDelete(comment.id)}>삭제</S.DeleteButton>
                   </div>
                 )}
               </div>
@@ -175,7 +157,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                   <br />
                 </>
               )}
-            </CommentContainer>
+            </S.CommentContainer>
           ))}
           <Pagination currentPage={currentPage} totalPages={Math.ceil(commentData.length / itemsPerPage)} setCurrentPage={handlePageChange} />
         </>
@@ -184,45 +166,4 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
   );
 }
 
-const CommentContainer = styled.div`
-  border-radius: 8px;
-  padding: 10px 0 0 20px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-  background-color: white;
-  border: 1px solid #fdfaf6;
-  font-family: "NanumSquareNeo-Regular";
-`;
-const EditButton = styled.button`
-  background-color: #bdb7b0;
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  text-decoration: none;
-  font-size: 13px;
-  margin-right: 10px;
-  font-family: "BMJUA-Regular";
-
-  &:hover {
-    background-color: #606060;
-  }
-`;
-
-const DeleteButton = styled.button`
-  background-color: #746464;
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  text-decoration: none;
-  font-size: 13px;
-  margin-right: 10px;
-  font-family: "BMJUA-Regular";
-
-  &:hover {
-    background-color: #606060;
-  }
-`;
+export default Comment;

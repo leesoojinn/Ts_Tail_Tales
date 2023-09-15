@@ -1,9 +1,5 @@
 import React, { useEffect } from "react";
-import styled from "styled-components";
-
-interface PageNumberProps {
-  isActive: boolean;
-}
+import * as S from "../styles/components/style.pagination";
 
 interface PaginationProps {
   currentPage: number;
@@ -20,7 +16,7 @@ function Pagination({ currentPage, totalPages, setCurrentPage }: PaginationProps
   };
 
   useEffect(() => {
-    window.scrollTo(0, 0); // 페이지가 변경될 때 스크롤을 페이지 상단으로 이동
+    window.scrollTo(0, 0);
   }, [currentPage]);
 
   const renderPageNumbers = () => {
@@ -30,9 +26,9 @@ function Pagination({ currentPage, totalPages, setCurrentPage }: PaginationProps
       const isActive = i === currentPage;
 
       pageNumbers.push(
-        <StyledPageNumber key={i} isActive={isActive} onClick={() => handlePageClick(i)}>
+        <S.PageNumber key={i} isActive={isActive} onClick={() => handlePageClick(i)}>
           {i}
-        </StyledPageNumber>
+        </S.PageNumber>
       );
     }
 
@@ -40,33 +36,19 @@ function Pagination({ currentPage, totalPages, setCurrentPage }: PaginationProps
   };
 
   return (
-    <Div>
+    <div>
       {prevPage && (
-        <StyledPageNumber isActive={false} onClick={() => handlePageClick(prevPage)}>
+        <S.PageNumber isActive={false} onClick={() => handlePageClick(prevPage)}>
           이전
-        </StyledPageNumber>
+        </S.PageNumber>
       )}
       {renderPageNumbers()}
       {nextPage && (
-        <StyledPageNumber isActive={false} onClick={() => handlePageClick(nextPage)}>
+        <S.PageNumber isActive={false} onClick={() => handlePageClick(nextPage)}>
           다음
-        </StyledPageNumber>
+        </S.PageNumber>
       )}
-    </Div>
+    </div>
   );
 }
-
 export default Pagination;
-
-const Div = styled.div`
-  display: flex;
-  justify-content: center;
-  padding-top: 30px;
-`;
-
-const StyledPageNumber = styled.div<PageNumberProps>`
-  cursor: pointer;
-  margin: 0 10px;
-  font-weight: ${(props) => (props.isActive ? "bold" : "normal")};
-  display: inline-block;
-`;

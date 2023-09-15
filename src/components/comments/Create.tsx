@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import styled from "styled-components";
-import { v4 as uuid } from "uuid"; // uuid 패키지에서 v4 함수 임포트
+import { v4 as uuid } from "uuid";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "../../supabase";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import * as S from "../../styles/components/comments/style.commentcreate";
 
 interface CreateProps {
-  // onCommentAdded: () => void;
   postId: string;
 }
 export default function Create({ postId }: CreateProps) {
@@ -57,7 +57,6 @@ export default function Create({ postId }: CreateProps) {
         });
         throw new Error("댓글 작성 오류");
       }
-      // 반환값으로 Promise<void> 사용
       return;
     } catch (error) {
       Swal.fire({
@@ -101,7 +100,7 @@ export default function Create({ postId }: CreateProps) {
       postId,
       content,
       userNickname: userNickname || user?.user_metadata.full_name,
-      date: new Date().toISOString().slice(0, 19).replace("T", " "), // 현재 시간을 문자열로 변환
+      date: new Date().toISOString().slice(0, 19).replace("T", " "),
       email: user!.email,
       avatar_url: user?.user_metadata.user_profile || user?.user_metadata.avatar_url,
     };
@@ -131,54 +130,13 @@ export default function Create({ postId }: CreateProps) {
     });
   };
   return (
-    <CreateContainer>
-      <CreateForm onSubmit={handleSubmit}>
-        <InputContainer>
-          <CreateTextarea placeholder="댓글을 입력하세요" value={content} onChange={(e) => setContent(e.target.value)} />
-          <CreateButton type="submit">작성</CreateButton>
-        </InputContainer>
-      </CreateForm>
-    </CreateContainer>
+    <S.CreateContainer>
+      <S.CreateForm onSubmit={handleSubmit}>
+        <S.InputContainer>
+          <S.CreateTextarea placeholder="댓글을 입력하세요" value={content} onChange={(e) => setContent(e.target.value)} />
+          <S.CreateButton type="submit">작성</S.CreateButton>
+        </S.InputContainer>
+      </S.CreateForm>
+    </S.CreateContainer>
   );
 }
-const CreateContainer = styled.div`
-  margin-top: 20px;
-  padding: 20px;
-  border: 1px solid #fdfaf6;
-  border-radius: 8px;
-  background-color: white;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-`;
-const CreateForm = styled.form`
-  display: flex;
-  flex-direction: column;
-`;
-const InputContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 10px;
-`;
-const CreateTextarea = styled.textarea`
-  padding: 8px;
-  border: 1px solid white;
-  border-radius: 8px;
-  resize: none;
-`;
-const CreateButton = styled.button`
-  background-color: #746464;
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  text-decoration: none;
-  font-size: 13px;
-  align-self: flex-end;
-  width: fit-content;
-  font-family: "BMJUA-Regular";
-
-  &:hover {
-    background-color: #606060;
-  }
-`;

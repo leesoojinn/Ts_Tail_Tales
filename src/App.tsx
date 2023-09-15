@@ -10,9 +10,7 @@ import PostCreate from "./pages/PostCreate";
 import PostEdit from "./pages/PostEdit";
 import Community from "./pages/Community";
 import PostDetail from "./pages/PostDetail";
-import { FavoritesProvider } from "./components/FavoritesContext";
-
-// animals={[]} loading={false} error={null} />}
+import { FavoritesProvider } from "./components/favorite/FavoritesContext";
 
 function App() {
   return (

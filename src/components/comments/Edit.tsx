@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { supabase } from "../../supabase";
-import styled from "styled-components";
 import Swal from "sweetalert2";
+import * as S from "../../styles/components/comments/style.commentedit";
 
 interface Comment {
   id: string;
@@ -12,9 +12,9 @@ interface Comment {
   userNickname: string;
   date: string;
   email: string;
-  avatar_url: string;
+  avatarUrl: string;
 }
-export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateComplete: () => void }) {
+function Edit({ id, onUpdateComplete }: { id: string; onUpdateComplete: () => void }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const {
@@ -32,7 +32,6 @@ export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateCom
   const updateComment = useMutation<Comment, Error, Comment>(
     async (updatedComment) => {
       try {
-        // 댓글 업데이트
         const { data, error } = await supabase.from("comments").update(updatedComment).eq("id", updatedComment.id);
         if (error) {
           Swal.fire({
@@ -105,7 +104,7 @@ export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateCom
       userNickname,
       date: initialData?.date || new Date().toISOString(),
       email: initialData!.email,
-      avatar_url: initialData!.avatar_url,
+      avatarUrl: initialData!.avatarUrl,
     };
     try {
       await updateComment.mutateAsync(updatedComment);
@@ -124,70 +123,24 @@ export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateCom
     onUpdateComplete();
   };
   if (isLoading) {
-    return <LoadingText>로딩 중 ...</LoadingText>;
+    return <S.LoadingText>로딩 중 ...</S.LoadingText>;
   }
   if (isError) {
-    return <ErrorText>{(error as Error).message}</ErrorText>;
+    return <S.ErrorText>{(error as Error).message}</S.ErrorText>;
   }
   if (!initialData) {
-    return <ErrorText>댓글을 찾을 수 없습니다.</ErrorText>;
+    return <S.ErrorText>댓글을 찾을 수 없습니다.</S.ErrorText>;
   }
   return (
-    <Container>
-      <Form onSubmit={handleUpdate}>
-        <FormItem>
-          <Textarea value={content} onChange={handleContentChange} />
-        </FormItem>
-        <SubmitButton type="submit">수정</SubmitButton>
-      </Form>
-    </Container>
+    <S.Container>
+      <S.Form onSubmit={handleUpdate}>
+        <S.FormItem>
+          <S.Textarea value={content} onChange={handleContentChange} />
+        </S.FormItem>
+        <S.SubmitButton type="submit">수정</S.SubmitButton>
+      </S.Form>
+    </S.Container>
   );
 }
-const Container = styled.div`
-  padding: 20px;
-`;
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-const FormItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
-`;
-const Textarea = styled.textarea`
-  width: 950px;
-  height: 50px;
-  font-size: 15px;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  border: 1px solid white;
 
-  @media (max-width: 700px) {
-    width: 260px;
-  }
-`;
-const SubmitButton = styled.button`
-  background-color: #bdb7b0;
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  text-decoration: none;
-  font-size: 15px;
-  margin-right: 10px;
-  &:hover {
-    background-color: #606060;
-  }
-`;
-const LoadingText = styled.div`
-  font-size: 1.2rem;
-  color: gray;
-`;
-const ErrorText = styled.div`
-  font-size: 1.2rem;
-  color: red;
-`;
+export default Edit;
