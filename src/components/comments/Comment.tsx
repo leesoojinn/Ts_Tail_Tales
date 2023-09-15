@@ -5,20 +5,22 @@ import Edit from "./Edit";
 import { supabase } from "../../supabase";
 import Pagination from "../Pagination";
 import styled from "styled-components";
+import usePageHook from "../../hooks/pageHook";
+import Swal from "sweetalert2";
 
 interface CommentProps {
-  // comments?: any[];
   comments?: string[];
   postId?: string;
 }
-
-const ITEMS_PER_PAGE = 5;
 
 export default function Comment({ comments: commentsProp }: CommentProps) {
   const { id } = useParams<{ id: string }>();
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [deleted, setDeleted] = useState(false);
   const queryClient = useQueryClient();
+
+  const { currentPage, setCurrentPage, indexOfLastItem, indexOfFirstItem, itemsPerPage } = usePageHook(5);
+
   const {
     data: commentData,
     isLoading,
@@ -40,27 +42,57 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
     }
   );
 
+  // const handleDelete = async (commentId: string) => {
+  //   if (window.confirm("정말 삭제?")) {
+  //     try {
+  //       await supabase.from("comments").delete().eq("id", commentId);
+  //       queryClient.invalidateQueries(["comments", id]);
+  //     } catch (error) {
+  //       Swal.fire({
+  //         position: "center",
+  //         icon: "error",
+  //         title: "댓글 삭제 오류",
+  //         showConfirmButton: false,
+  //         timerProgressBar: true,
+  //         timer: 3000,
+  //       });
+  //     }
+  //   }
+  // };
+
   const handleDelete = async (commentId: string) => {
-    if (window.confirm("정말 삭제하시겠습니까?")) {
+    const result = await Swal.fire({
+      title: "정말 삭제하시겠습니까?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
+    });
+
+    if (result.isConfirmed) {
       try {
         await supabase.from("comments").delete().eq("id", commentId);
         queryClient.invalidateQueries(["comments", id]);
       } catch (error) {
-        alert("댓글 삭제 오류");
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "댓글 삭제 오류",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
       }
     }
   };
-
-  const [currentPage, setCurrentPage] = useState(1);
 
   const handlePageChange = (newPage: number): void => {
     setCurrentPage(newPage);
   };
 
-  const indexOfLastComment = currentPage * ITEMS_PER_PAGE;
-  const indexOfFirstComment = indexOfLastComment - ITEMS_PER_PAGE;
-
-  const currentComments = commentData?.slice(indexOfFirstComment, indexOfLastComment);
+  const currentComments = commentData?.slice(indexOfFirstItem, indexOfLastItem);
 
   if (isLoading) {
     return <div>로딩 중 ...</div>;
@@ -97,7 +129,7 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                   }}
                 >
                   <img
-                    src={comment.avatar_url || "/image/header/profile.jpg"}
+                    src={comment.avatar_url || comment.user_profile}
                     alt="User Avatar"
                     style={{
                       width: "100%",
@@ -138,14 +170,14 @@ export default function Comment({ comments: commentsProp }: CommentProps) {
                 />
               ) : (
                 <>
-                  <div style={{ fontSize: "20px" }}>{comment.content}</div>
+                  <div style={{ fontSize: "18px" }}>{comment.content}</div>
                   <br />
                   <br />
                 </>
               )}
             </CommentContainer>
           ))}
-          <Pagination currentPage={currentPage} totalPages={Math.ceil(commentData.length / ITEMS_PER_PAGE)} setCurrentPage={handlePageChange} />
+          <Pagination currentPage={currentPage} totalPages={Math.ceil(commentData.length / itemsPerPage)} setCurrentPage={handlePageChange} />
         </>
       )}
     </div>
@@ -159,6 +191,7 @@ const CommentContainer = styled.div`
   margin-bottom: 20px;
   background-color: white;
   border: 1px solid #fdfaf6;
+  font-family: "NanumSquareNeo-Regular";
 `;
 const EditButton = styled.button`
   background-color: #bdb7b0;
@@ -170,6 +203,8 @@ const EditButton = styled.button`
   text-decoration: none;
   font-size: 13px;
   margin-right: 10px;
+  font-family: "BMJUA-Regular";
+
   &:hover {
     background-color: #606060;
   }
@@ -185,6 +220,8 @@ const DeleteButton = styled.button`
   text-decoration: none;
   font-size: 13px;
   margin-right: 10px;
+  font-family: "BMJUA-Regular";
+
   &:hover {
     background-color: #606060;
   }

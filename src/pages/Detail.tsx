@@ -6,6 +6,7 @@ import { formatDate } from "../api/fetchData";
 import { FiArrowLeft } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import Swal from "sweetalert2";
 
 function Detail() {
   const location = useLocation();
@@ -20,7 +21,35 @@ function Detail() {
   }, []);
 
   const handleInquiryClick = () => {
-    alert("입양 문의하기 버튼이 클릭되었습니다.");
+    // 현재 창의 가로 너비를 가져옵니다.
+    const windowWidth = window.innerWidth;
+
+    // 가로 너비가 700px 이하인 경우 전화를 걸도록 처리합니다.
+    if (windowWidth <= 700) {
+      // SHTER_TELNO를 사용하여 전화 거는 로직을 여기에 추가하세요.
+      window.location.href = `tel:${item.SHTER_TELNO}`;
+    } else {
+      // 가로 너비가 700px보다 큰 경우 지도 링크 열기 로직을 수행합니다.
+      // const directionsUrl = createDirectionsUrl(item.SHTER_NM, item.REFINE_WGS84_LAT, item.REFINE_WGS84_LOGT);
+      // window.open(directionsUrl, "_blank");
+
+      Swal.fire({
+        title: `${item.SHTER_TELNO} 로 문의 해주세요!🐶`,
+        icon: "question",
+      });
+    }
+  };
+
+  const kakaoMapClick = () => {
+    // 입양 문의하기 버튼이 클릭되었을 때 길찾기 URL을 생성하고 이동
+    const directionsUrl = createDirectionsUrl(item.SHTER_NM, item.REFINE_WGS84_LAT, item.REFINE_WGS84_LOGT);
+    window.open(directionsUrl, "_blank");
+  };
+
+  // 길찾기 URL 생성 함수
+  const createDirectionsUrl = (destinationName: string, lat: string, log: string) => {
+    const destination = `${destinationName},${lat},${log}`;
+    return `https://map.kakao.com/link/to/${destination}`;
   };
 
   return (
@@ -39,7 +68,15 @@ function Detail() {
         </StDetailText>
         <div className="top">
           <div className="img-container">
-            <img className="petimg" src={item.IMAGE_COURS} alt={item.ABDM_IDNTFY_NO} />
+            <img
+              className="petimg"
+              src={item.IMAGE_COURS}
+              alt={item.ABDM_IDNTFY_NO}
+              onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                const target = e.target as HTMLImageElement;
+                target.src = "/image/header/profile.jpg";
+              }}
+            />{" "}
             <div id={item.ABDM_IDNTFY_NO} data-pet={item.pet} />
           </div>
           <div className="description">
@@ -49,62 +86,63 @@ function Detail() {
             </div>
             <div className="table">
               <div className="row">
-                <span>품종</span>
+                <Title>품종</Title>
                 <span>{item.SPECIES_NM.split("]")[1]}</span>
               </div>
               <div className="row">
-                <span>성별</span>
+                <Title>성별</Title>
                 <span>{item.SEX_NM}</span>
               </div>
               <div className="row">
-                <span>중성화 여부</span>
+                <Title>중성화 여부</Title>
                 <span>{item.NEUT_YN}</span>
               </div>
               <div className="row">
-                <span>나이 / 체중</span>
+                <Title>나이 / 체중</Title>
                 <span>
                   {new Date().getFullYear() - item.AGE_INFO.slice(0, 4) + 1}살 / &nbsp;
                   {item.BDWGH_INFO.split("(")[0]}kg
                 </span>
               </div>
               <div className="row">
-                <span>접수일시</span>
-                <span>{item.RECEPT_DE}</span>
+                <Title>접수일시</Title>
+                <span>{formatDate(item.RECEPT_DE)}</span>
               </div>
               <div className="row">
-                <span>발견장소</span>
+                <Title>발견장소</Title>
                 <span>{item.DISCVRY_PLC_INFO}</span>
               </div>
               <div className="row">
-                <span>특징</span>
+                <Title>특징</Title>
                 <span>{item.SFETR_INFO}</span>
               </div>
               <div className="row">
-                <span>공고기한</span>
+                <Title>공고기한</Title>
                 <span>
                   {formatDate(item.PBLANC_BEGIN_DE)} ~{formatDate(item.PBLANC_END_DE)}
                 </span>
               </div>
               <div className="row">
-                <span>보호센터</span>
+                <Title>보호센터</Title>
                 <span>{item.SHTER_NM}</span>
               </div>
               <div className="row">
-                <span>보호센터 주소</span>
+                <Title>보호센터 주소</Title>
                 <span>{item.REFINE_ROADNM_ADDR}</span>
               </div>
               <div className="row">
-                <span>보호센터 연락처</span>
+                <Title>보호센터 연락처</Title>
                 <span>{item.SHTER_TELNO}</span>
               </div>
               <div className="row">
-                <span>보호장소</span>
+                <Title>보호장소</Title>
                 <span>{item.PROTECT_PLC}</span>
               </div>
             </div>
           </div>
         </div>
         <InquiryButton onClick={handleInquiryClick}>입양 문의하기</InquiryButton>
+        <InquiryButton onClick={kakaoMapClick}>만나러 가는 길</InquiryButton>
         <div className="location">
           <p>
             <span>{item.SHTER_NM}</span>
@@ -149,8 +187,9 @@ const StDetailText = styled.div`
     color: #746464;
   }
 `;
-const BackIcon = styled.span`
-  margin-right: 5px;
+const BackIcon = styled.button`
+  margin-left: 20px;
+  // margin-right: 5px;
   font-size: 20px;
   font-weight: bolder;
   border-radius: 50%;
@@ -163,7 +202,6 @@ const BackIcon = styled.span`
     color: #868686;
   }
 `;
-
 const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -186,6 +224,10 @@ const DetailContainer = styled.div`
     border-radius: 20px;
     border: none;
     height: 680px;
+
+    @media (max-width: 770px) {
+      height: 400px;
+    }
   }
 
   .top {
@@ -198,7 +240,6 @@ const DetailContainer = styled.div`
 
     display: flex;
     flex-direction: column;
-    margin-top: 2rem;
 
     @media (min-width: 768px) {
       flex-direction: row;
@@ -225,6 +266,9 @@ const DetailContainer = styled.div`
   }
 
   .description {
+    font-size: 17px;
+    font-family: "NanumSquareNeo-Regular";
+
     @media (min-width: 768px) {
       width: 50%;
     }
@@ -303,9 +347,16 @@ const InquiryButton = styled.button`
   background: #746464;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
 
+  font-family: "BMJUA-Regular";
+
   transition: transform 0.3s ease;
 
   &:hover {
     transform: scale(1.05);
   }
+`;
+
+const Title = styled.span`
+  font-size: 20px;
+  font-family: "BMJUA-Regular";
 `;

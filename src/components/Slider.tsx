@@ -22,6 +22,7 @@ const StyledSlider = styled(Slider)`
     padding: 10px;
     box-sizing: border-box;
     max-width: 1000px;
+    margin-left: 30px;
   }
 
   .slick-prev {
@@ -75,6 +76,7 @@ function CustomSlider({ items }: CustomSliderProps) {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
+          arrows: false,
         },
       },
       {
@@ -82,6 +84,7 @@ function CustomSlider({ items }: CustomSliderProps) {
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
+          arrows: false,
         },
       },
     ],

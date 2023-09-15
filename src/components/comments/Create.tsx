@@ -4,15 +4,20 @@ import styled from "styled-components";
 import { v4 as uuid } from "uuid"; // uuid 패키지에서 v4 함수 임포트
 import { User } from "@supabase/supabase-js";
 import { supabase } from "../../supabase";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+
 interface CreateProps {
-  onCommentAdded: () => void;
+  // onCommentAdded: () => void;
   postId: string;
 }
-export default function Create({ onCommentAdded, postId }: CreateProps) {
+export default function Create({ postId }: CreateProps) {
   const [content, setContent] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const [userNickname, setUserNickname] = useState<string | null>(null);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
@@ -42,13 +47,27 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
     try {
       const { data, error } = await supabase.from("comments").insert([newComment]);
       if (error) {
-        alert("댓글 작성 중 오류 발생");
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "댓글 작성 중 오류 발생",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
         throw new Error("댓글 작성 오류");
       }
       // 반환값으로 Promise<void> 사용
       return;
     } catch (error) {
-      alert("댓글 작성 중 오류 발생");
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "댓글 작성 중 오류 발생",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 3000,
+      });
       throw error;
     }
   });
@@ -56,11 +75,25 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
-      alert("로그인이 필요합니다.");
+      Swal.fire({
+        icon: "warning",
+        title: "로그인이 필요합니다.",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
+      });
       return;
     }
     if (!content) {
-      window.alert("내용을 입력해주세요.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "내용을 입력해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
     const newComment = {
@@ -70,16 +103,30 @@ export default function Create({ onCommentAdded, postId }: CreateProps) {
       userNickname: userNickname || user?.user_metadata.full_name,
       date: new Date().toISOString().slice(0, 19).replace("T", " "), // 현재 시간을 문자열로 변환
       email: user!.email,
-      avatar_url: user?.user_metadata.avatar_url || "",
+      avatar_url: user?.user_metadata.user_profile || user?.user_metadata.avatar_url,
     };
     createCommentMutation.mutate(newComment, {
       onSuccess: () => {
-        alert("댓글이 작성되었습니다.");
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "댓글이 작성되었습니다.",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 1000,
+        });
         setContent("");
-        onCommentAdded();
+        queryClient.invalidateQueries(["comments"]);
       },
       onError: () => {
-        alert("댓글 작성 오류");
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "댓글 작성 중 오류 발생",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
       },
     });
   };
@@ -129,6 +176,8 @@ const CreateButton = styled.button`
   font-size: 13px;
   align-self: flex-end;
   width: fit-content;
+  font-family: "BMJUA-Regular";
+
   &:hover {
     background-color: #606060;
   }

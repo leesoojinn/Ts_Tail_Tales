@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 import { supabase } from "../supabase";
+import Swal from "sweetalert2";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -13,25 +14,60 @@ function Login() {
     e.preventDefault();
 
     if (!email && !password) {
-      alert("이메일과 비밀번호를 입력해주세요.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "이메일과 비밀번호를 입력해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
 
     if (!email) {
-      alert("이메일을 입력해주세요.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "이메일을 입력해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
     if (!emailRegex.test(email)) {
-      alert("올바른 이메일 형식이 아닙니다.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "올바른 이메일 형식이 아닙니다.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
 
     if (!password) {
-      alert("비밀번호를 입력해주세요.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "비밀번호를 입력해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     } else if (password.length < 6) {
-      alert("비밀번호 6자리 이상 입력해주세요.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "비밀번호 6자리 이상 입력해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
 
@@ -41,13 +77,13 @@ function Login() {
     });
 
     if (error) {
-      console.error(error);
-      alert("일치하는 정보가 없습니다.");
+      Swal.fire({
+        title: "로그인 실패",
+        text: "회원가입이 되어있지 계정입니다.",
+        icon: "error",
+      });
     } else if (data) {
-      const confirmed = window.confirm("로그인 하시겠습니까?");
-      if (confirmed) {
-        navigate("/home");
-      }
+      navigate("/home");
     }
   }
 
@@ -56,7 +92,11 @@ function Login() {
       provider: "kakao",
     });
     if (response.error) {
-      console.error(response.error);
+      Swal.fire({
+        title: "로그인 실패",
+        text: "kakao 로그인 중에 문제가 발생했습니다. 다시 시도해 주세요.",
+        icon: "error",
+      });
     }
   };
 
@@ -65,7 +105,11 @@ function Login() {
       provider: "google",
     });
     if (response.error) {
-      console.error(response.error);
+      Swal.fire({
+        title: "로그인 실패",
+        text: "google 로그인 중에 문제가 발생했습니다. 다시 시도해 주세요.",
+        icon: "error",
+      });
     }
   };
 
@@ -79,22 +123,10 @@ function Login() {
         <LoginFormContainer>
           <form onSubmit={signInWithEmail}>
             <div>
-              <input
-                type="email"
-                id="email"
-                placeholder="이메일"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+              <input type="email" id="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div>
-              <input
-                type="password"
-                id="password"
-                placeholder="비밀번호"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <input type="password" id="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
             <div>
               <button>로그인</button>
@@ -104,18 +136,10 @@ function Login() {
         <p>소셜 로그인</p>
         <div>
           <StKakaoLoginBtn onClick={loginWithKakao}>
-            <img
-              className="kakaoimg"
-              src="/image/social/kakao.png"
-              alt="Kakao Login"
-            />
+            <img className="kakaoimg" src="/image/social/kakao.png" alt="Kakao Login" />
           </StKakaoLoginBtn>
           <StGoogleLoginBtn onClick={loginWithGoogle}>
-            <img
-              className="googleimg"
-              src="/image/social/google.png"
-              alt="Google Login"
-            />
+            <img className="googleimg" src="/image/social/google.png" alt="Google Login" />
           </StGoogleLoginBtn>
         </div>
         <NoAccountMessage>
@@ -197,6 +221,7 @@ const LoginFormContainer = styled.div`
       background: #e4dfd9;
       transition: transform 0.3s ease;
       cursor: pointer;
+      font-family: "NanumSquareNeo-Regular";
 
       &:focus {
         border-radius: 10px;
@@ -224,6 +249,7 @@ const LoginFormContainer = styled.div`
       background: #746464;
       box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s ease;
+      font-family: "BMJUA-Regular";
 
       &:hover {
         transform: scale(1.05);

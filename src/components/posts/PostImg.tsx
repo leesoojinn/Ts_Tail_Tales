@@ -5,6 +5,7 @@ import Quill from "quill";
 import ImageResize from "@looop/quill-image-resize-module-react";
 import { supabase } from "../../supabase"; // Supabase 클라이언트 설정 파일
 import { styled } from "styled-components";
+import Swal from "sweetalert2";
 
 Quill.register("modules/ImageResize", ImageResize);
 
@@ -38,7 +39,14 @@ async function uploadImageToSupabase(imageFile: File): Promise<string> {
       throw new Error("Failed to obtain the image URL");
     }
   } catch (error) {
-    alert("이미지 업로드 중 오류 발생");
+    Swal.fire({
+      position: "center",
+      icon: "error",
+      title: "이미지 업로드 중 오류 발생",
+      showConfirmButton: false,
+      timerProgressBar: true,
+      timer: 1200,
+    });
     throw error;
   }
 }
@@ -67,7 +75,7 @@ export default function PostImg({
         try {
           const imageUrl = await uploadImageToSupabase(file);
 
-          const quillEditor = quillRef.current?.getEditor();
+          const quillEditor = quillRef?.current?.getEditor();
           const range = quillEditor?.getSelection();
 
           if (quillEditor && range) {
@@ -77,21 +85,25 @@ export default function PostImg({
             quillEditor.setSelection(newIndex, 0);
           }
         } catch (error) {
-          alert("이미지 업로드 중 오류 발생");
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "이미지 업로드 중 오류 발생",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 1200,
+          });
         }
       }
     };
   };
 
-  const handleDeleteImage = () => {
-    const quillEditor = quillRef.current?.getEditor();
-    const range = quillEditor?.getSelection();
-
-    if (quillEditor && range) {
-      const index = range.index || 0;
-      quillEditor.deleteText(index, 1, "user");
+  useEffect(() => {
+    if (quillRef?.current) {
+      const toolbar = quillRef?.current.getEditor().getModule("toolbar");
+      toolbar.addHandler("image", handleImage);
     }
-  };
+  }, []);
 
   return (
     <PostImgContainer>
@@ -141,7 +153,7 @@ const PostImgContainer = styled.div`
 
   @media screen and (max-width: 700px) {
     width: 370px;
-    height: 350px;
+    height: 420px;
   }
 `;
 
@@ -150,6 +162,6 @@ const StReactQuill = styled(ReactQuill)`
   height: 91%;
 
   @media screen and (max-width: 700px) {
-    height: 82%;
+    height: 85%;
   }
 `;

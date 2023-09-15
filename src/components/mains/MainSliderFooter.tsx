@@ -26,12 +26,12 @@ function MainSliderFooter() {
       name: "도지은",
       githubLink: "https://github.com/jinny0526",
       blogLink: "https://dfsfdffsfdf.tistory.com/",
-      imageSrc: "/image/mains/main4.jpg",
+      imageSrc: "/image/footer/DJE.jpg",
     },
     {
       name: "김윤지",
       blogLink: "https://blog.naver.com/99_yj",
-      imageSrc: "/image/footer/KYJ.png",
+      imageSrc: "/image/footer/KYJ.jpg",
     },
   ];
 
@@ -108,6 +108,12 @@ const Content = styled.div`
   padding: 20px;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 1349px) {
+    width: 90%;
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
 `;
 
 const Text = styled.div`

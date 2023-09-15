@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { styled } from "styled-components";
 import { useLocation } from "react-router";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 function MainSliderFunction() {
   const location = useLocation();
@@ -50,7 +51,18 @@ function MainSliderFunction() {
         </ImageWrapper>
         <Space />
         <ImageWrapper className={showImages ? "show" : ""}>
-          <ImgContainer onClick={() => navigate("/mypage/:id")}>
+          <ImgContainer
+            onClick={() => {
+              if (sessionStorage.getItem("user") === null) {
+                Swal.fire({
+                  icon: "warning",
+                  text: "로그인이 필요한 기능입니다.",
+                });
+              } else {
+                navigate("/mypage/:id");
+              }
+            }}
+          >
             <Img src="/image/mains/main8.jpg" alt="마이페이지" />
             <ImageCaption>마이페이지</ImageCaption>
           </ImgContainer>
@@ -109,6 +121,10 @@ const Container = styled.div`
 const TitleText = styled.h1`
   color: white;
   margin-bottom: 7%;
+
+  @media (max-width: 768px) {
+    font-size: 30px;
+  }
 `;
 
 const ImageContainer = styled.div`

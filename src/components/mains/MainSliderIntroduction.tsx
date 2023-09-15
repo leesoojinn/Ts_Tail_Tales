@@ -9,21 +9,18 @@ const MainSliderIntroduction = () => {
   return (
     <Container>
       <ImageContainer>
-        <ImageBackground
-          src="/image/mains/main1.jpg"
-          alt="강아지, 고양이 사진"
-        />
+        <ImageBackground src="/image/mains/main1.jpg" alt="강아지, 고양이 사진" />
         <TextWrap>
-          <h1>
+          <Title>
             유기견, 유기묘들에게 <br /> 새로운 삶을 선물해주세요
-          </h1>
-          <span>
+          </Title>
+          <Content>
             다양한 친구들을 만나보세요
             <br />
             지도 상에서 가까운 보호소를 찾아
             <br />
             유기동물을 입양하세요
-          </span>
+          </Content>
         </TextWrap>
       </ImageContainer>
       <Button onClick={() => navigate("/home")}>기다리는 친구들</Button>
@@ -68,7 +65,8 @@ const ImageContainer = styled.div`
   position: relative;
   overflow: hidden;
 
-  @media (min-width: 768px) {
+  @media (min-width: 1349px) {
+    width: 100%;
     padding: 0 2rem;
     background: #fdfaf6;
   }
@@ -95,6 +93,7 @@ const Button = styled.button`
   position: absolute;
   bottom: 180px;
   transition: transform 0.3s ease;
+  font-family: "BMJUA-Regular";
 
   &:hover {
     transform: scale(1.15);
@@ -108,4 +107,19 @@ const DownArrow = styled.div`
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
+`;
+
+const Title = styled.h1`
+  @media (max-width: 1349px) {
+    font-size: 30px;
+  }
+`;
+
+const Content = styled.span`
+  font-size: 18px;
+  color: #f0eeee;
+
+  @media (max-width: 1349px) {
+    font-size: 15px;
+  }
 `;

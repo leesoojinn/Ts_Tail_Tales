@@ -6,6 +6,7 @@ import Create from "../components/comments/Create";
 import Comment from "../components/comments/Comment";
 import { supabase } from "../supabase";
 import ReactHtmlParser from "react-html-parser";
+import Swal from "sweetalert2";
 
 export default function PostDetail() {
   const queryClient = useQueryClient();
@@ -20,7 +21,6 @@ export default function PostDetail() {
     error,
   } = useQuery(["posts", id], async () => {
     const { data, error } = await supabase.from("posts").select("*").eq("id", id).single();
-
     if (error) {
       throw error;
     }
@@ -54,7 +54,17 @@ export default function PostDetail() {
 
   // 게시물 삭제 핸들러
   const handleDelete = async () => {
-    if (window.confirm("정말로 이 게시물을 삭제하시겠습니까?")) {
+    const result = await Swal.fire({
+      title: "정말로 이 게시물을 삭제하시겠습니까?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
+    });
+
+    if (result.isConfirmed) {
       await deletePost(post.id);
       navigate("/community");
     }
@@ -90,7 +100,7 @@ export default function PostDetail() {
           </ButtonContainer>
         </Content>
 
-        <Create onCommentAdded={() => queryClient.invalidateQueries(["comments", id])} postId={post.id} />
+        <Create postId={post.id} />
         <Comment postId={post.id} />
       </Container>
     </OuterContainer>
@@ -139,7 +149,7 @@ const StDetailText = styled.div`
   }
 `;
 
-const BackIcon = styled.span`
+const BackIcon = styled.button`
   margin-right: 5px;
   font-size: 20px;
   font-weight: bolder;
@@ -176,6 +186,9 @@ const Content = styled.div`
   background-color: white;
   border-radius: 20px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  line-height: 2;
+
+  font-family: "NanumSquareNeo-Regular";
 
   img {
     max-width: 100%;
@@ -200,6 +213,7 @@ const EditButton = styled(Link)`
   text-decoration: none;
   font-size: 13px;
   margin-right: 10px;
+  font-family: "BMJUA-Regular";
 
   &:hover {
     background-color: #606060;
@@ -216,6 +230,7 @@ const DeleteButton = styled.button`
   text-decoration: none;
   font-size: 13px;
   margin-right: 10px;
+  font-family: "BMJUA-Regular";
 
   &:hover {
     background-color: #606060;

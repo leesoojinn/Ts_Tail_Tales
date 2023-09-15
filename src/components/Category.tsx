@@ -79,9 +79,16 @@ const Container = styled.div`
   background-color: #746464;
   border-radius: 200px;
   margin: 0 auto;
-  width: 1000px;
+  width: 100%;
+  max-width: 1000px; /* 최대 너비 설정 */
   margin-top: 100px;
   margin-bottom: 50px;
+
+  /* 미디어 쿼리를 사용하여 화면 크기에 따라 스타일 조정 */
+  @media (max-width: 768px) {
+    font-size: 16px;
+    padding: 5px;
+  }
 
   .label {
     display: flex;
@@ -133,6 +140,11 @@ const FlexContainer = styled.div`
   gap: 30px;
   align-items: center;
   flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 10px;
+  }
 `;
 
 const CalenderContainer = styled.div`
@@ -140,6 +152,9 @@ const CalenderContainer = styled.div`
   align-items: center;
   flex-direction: row;
   gap: 10px;
+  @media (max-width: 768px) {
+    width: 200px;
+  }
 `;
 
 const CalenderInput = styled.input`

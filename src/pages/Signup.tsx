@@ -1,56 +1,62 @@
 import React, { useState, FormEvent } from "react";
 import { supabase } from "../supabase";
-import { styled } from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import styled from "styled-components"; // 추가: 스타일 컴포넌트 라이브러리
 
 function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [nickname, setNickname] = useState("");
+  const [profileImage, setProfileImage] = useState<File | null>(null); // File 또는 null로 타입 설정
+
   const navigate = useNavigate();
+
   const signupHandler = async (e: FormEvent) => {
     e.preventDefault();
-    if (!email && !password && !nickname) {
-      alert("이메일과 비밀번호, 닉네임을 입력해주세요.");
-      return;
-    }
-    // 추가: 이메일 유효성 검사
-    if (!email) {
-      alert("이메일을 입력해주세요.");
-      return;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
-    if (!emailRegex.test(email)) {
-      alert("올바른 이메일 형식이 아닙니다.");
-      return;
-    }
-    // 추가: 비밀번호 유효성 검사
-    if (!password) {
-      alert("비밀번호를 입력해주세요.");
-      return;
-    } else if (password.length < 6) {
-      alert("비밀번호 6자리 이상 입력해주세요.");
-      return;
-    }
-    // else if (!/^(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/.test(password)) {
-    //   alert("비밀번호는 영문, 숫자, 특수 문자 중 하나 이상을 포함해야 합니다.");
-    //   return;
-    // }
 
-    if (!password || !passwordConfirm) {
-      alert("비밀번호 또는 비밀번호 확인을 확인해주세요.");
-      return;
-    } else if (password !== passwordConfirm) {
-      alert("비밀번호가 일치하지 않습니다.");
+    if (!email || !password || !passwordConfirm || !nickname) {
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "모든 필수 필드를 입력해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
 
-    if (!nickname) {
-      alert("닉네임을 입력해주세요.");
+    if (password !== passwordConfirm) {
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "비밀번호가 일치하지 않습니다.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
       return;
     }
+
     try {
+      let imagePath = null;
+      if (profileImage) {
+        // 프로필 사진이 있는 경우에만 업로드
+
+        const { data, error } = await supabase.storage
+          .from("image/profiles") //
+          .upload(`${email}/${profileImage.name}`, profileImage);
+
+        if (error) {
+          console.error("프로필 사진 업로드 오류:", error);
+          return;
+        }
+
+        imagePath = `https://livvtclsfcwcjiljzxhh.supabase.co/storage/v1/object/public/image/profiles/${email}/${profileImage.name}`;
+      }
+
       const { data: signUpData, error: signUpError } =
         await supabase.auth.signUp({
           email,
@@ -58,34 +64,86 @@ function SignUp() {
           options: {
             data: {
               user_name: nickname,
+              user_profile: imagePath,
             },
           },
         });
-      if (!signUpError) {
-        // 회원 가입 성공 시 추가 정보 업데이트
-        if (signUpData?.user) {
-          // .user 프로퍼티 확인
-          const { data: profileData, error: profileError } = await supabase
-            .from("profiles")
-            .upsert([
-              {
-                id: signUpData.user.id as string,
-                nickname,
-              },
-            ]);
-          alert("회원 가입 완료되었습니다.");
-          navigate("/home");
+
+      if (signUpError) {
+        if (signUpError.message === "User already registered") {
+          Swal.fire({
+            title: "회원가입 실패",
+            text: "이미 가입되어있는 정보입니다.",
+            icon: "error",
+          });
         } else {
-          alert("회원 가입 중 오류가 발생했습니다.");
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "회원 가입 중 오류가 발생했습니다.",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 1200,
+          });
         }
-      } else {
-        alert("이미 가입되어있는 정보입니다.");
+        return;
       }
-    } catch (error) {
-      alert("알 수 없는 오류가 발생했습니다.");
+
+      if (signUpData?.user) {
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .upsert([
+            {
+              id: signUpData.user.id as string,
+              nickname,
+            },
+          ]);
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "회원 가입 완료되었습니다.",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 1200,
+        });
+        navigate("/home");
+      } else {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "회원 가입 중 오류가 발생했습니다.",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 1200,
+        });
+      }
+    } catch (error: any) {
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "회원 가입 중 오류",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1200,
+      });
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      // const regex = /[!@#$%^&*(),.?":{}|<>ㄱ-ㅎㅏ-ㅣ가-힣]/;
+      // if (regex.test(file.name)) {
+      //   Swal.fire({
+      //     icon: "error",
+      //     text: "사진 이름에 특수 문자나 한글이 포함되어 있으면 안됩니다.",
+      //   });
+      // } else {
+      //   setProfileImage(file);
+      // }
+      setProfileImage(file);
+    }
+  };
   return (
     <SignupContainer>
       <LeftSide>
@@ -130,6 +188,14 @@ function SignUp() {
               placeholder="닉네임"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
+            />
+          </div>
+          <div>
+            <InputLabel>프로필 사진</InputLabel>
+            <InputBox
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
             />
           </div>
           <StButton type="submit">회원가입</StButton>
@@ -191,7 +257,7 @@ const RightSide = styled.div`
     }
 
     input {
-      width: 100%; /* Adjust input width for smaller screens */
+      width: 100%;
       height: 45px;
       padding: 5px 10px;
       font-size: 15px;
@@ -211,9 +277,9 @@ const RightSide = styled.div`
     }
 
     button {
-      width: 100%; /* Adjust button width for smaller screens */
+      width: 100%;
       height: 44px;
-      margin: 5px 0; /* Adjust margin for smaller screens */
+      margin: 5px 11px;
       cursor: pointer;
       font-size: 15px;
       border: none;
@@ -227,10 +293,13 @@ const RightSide = styled.div`
         transform: scale(1.05);
       }
     }
+    @media (max-width: 850px) {
+      width: 84%;
+      padding-right: 30px;
+    }
   }
 `;
 
-//--------------------------
 const SignupContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -243,11 +312,13 @@ const SignupContainer = styled.div`
   right: 0;
   bottom: 0;
 `;
+
 const InputLabel = styled.div`
   margin: 5px 5px 5px 5px;
   font-weight: bold;
   justify-content: center;
 `;
+
 const InputBox = styled.input`
   width: 282px;
   height: 30px;
@@ -256,11 +327,14 @@ const InputBox = styled.input`
   font-size: 15px;
   display: inline-block;
   outline: none;
-  ​ &:focus {
+  font-family: "NanumSquareNeo-Regular";
+
+  &:focus {
     border: 2px solid #333;
     border-radius: 3px;
   }
 `;
+
 const StButton = styled.button`
   width: 300px;
   height: 50px;
@@ -271,7 +345,9 @@ const StButton = styled.button`
   background-color: #333;
   border: #333;
   color: white;
+  font-family: "BMJUA-Regular";
 `;
+
 const NoAccountMessage = styled.div`
   margin-top: 10px;
   font-size: 14px;

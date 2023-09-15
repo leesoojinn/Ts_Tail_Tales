@@ -1,13 +1,28 @@
+/* @font-face {
+  font-family: "Dxcutecute-Regular";
+  font-weight: normal;
+  src: url("./fonts/Dxcutecute.ttf") format("truetype");
+} */
+
+@font-face {
+  font-family: "BMJUA-Regular";
+  font-weight: normal;
+  src: url("./fonts/BMJUA_ttf.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "NanumSquareNeo-Regular";
+  font-weight: normal;
+  src: url("./fonts/NanumSquareNeo-cBd.ttf") format("truetype");
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: "BMJUA-Regular";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }

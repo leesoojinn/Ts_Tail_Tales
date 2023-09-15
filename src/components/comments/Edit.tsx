@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { supabase } from "../../supabase";
 import styled from "styled-components";
+import Swal from "sweetalert2";
+
 interface Comment {
   id: string;
   postId?: string;
@@ -33,12 +35,26 @@ export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateCom
         // 댓글 업데이트
         const { data, error } = await supabase.from("comments").update(updatedComment).eq("id", updatedComment.id);
         if (error) {
-          alert("댓글 수정 중 오류 발생");
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "댓글 수정 중 오류 발생",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 1200,
+          });
           throw error;
         }
         return updatedComment;
       } catch (error) {
-        alert("댓글 수정 중 오류 발생");
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "댓글 수정 중 오류 발생",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 1200,
+        });
         throw error;
       }
     },
@@ -46,7 +62,14 @@ export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateCom
       onSuccess: (updatedComment) => {
         queryClient.setQueryData(["comments", id], updatedComment);
         queryClient.invalidateQueries(["comments", id]);
-        window.alert("댓글 수정이 완료되었습니다.");
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "댓글 수정이 완료되었습니다.",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 1000,
+        });
         onUpdateComplete();
       },
     }
@@ -65,7 +88,14 @@ export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateCom
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content) {
-      window.alert("내용을 입력해주세요.");
+      Swal.fire({
+        position: "center",
+        icon: "warning",
+        title: "내용을 입력해주세요.",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1000,
+      });
       return;
     }
     const updatedComment: Comment = {
@@ -80,12 +110,18 @@ export default function Edit({ id, onUpdateComplete }: { id: string; onUpdateCom
     try {
       await updateComment.mutateAsync(updatedComment);
     } catch (error) {
-      alert("댓글 수정 오류");
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "댓글 수정 오류",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 1000,
+      });
       return;
     }
     queryClient.invalidateQueries(["comments", id]);
     onUpdateComplete();
-    // window.location.reload();
   };
   if (isLoading) {
     return <LoadingText>로딩 중 ...</LoadingText>;
@@ -128,6 +164,10 @@ const Textarea = styled.textarea`
   margin-bottom: 10px;
   border-radius: 8px;
   border: 1px solid white;
+
+  @media (max-width: 700px) {
+    width: 260px;
+  }
 `;
 const SubmitButton = styled.button`
   background-color: #bdb7b0;

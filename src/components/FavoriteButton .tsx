@@ -4,6 +4,7 @@ import { AnimalShelter } from "../api/fetchData";
 import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { styled } from "styled-components";
+import Swal from "sweetalert2";
 
 interface FavoriteButtonProps {
   item: AnimalShelter;
@@ -18,7 +19,11 @@ function FavoriteButton({ item, isLoggedIn, isFavorite, onToggleFavorite, onRemo
     event.stopPropagation();
 
     if (!isLoggedIn) {
-      alert("로그인 후 즐겨찾기를 이용해주세요.");
+      Swal.fire({
+        icon: "info",
+        title: "Alert가 실행되었습니다.",
+        text: "이곳은 내용이 나타나는 곳입니다.",
+      });
       return;
     }
 
@@ -26,7 +31,11 @@ function FavoriteButton({ item, isLoggedIn, isFavorite, onToggleFavorite, onRemo
       const { data: userData, error: userError } = await supabase.auth.getUser();
 
       if (userError) {
-        alert("로그인 후 즐겨찾기를 이용해주세요.");
+        Swal.fire({
+          icon: "warning",
+          title: "알림",
+          text: "로그인 후 즐겨찾기를 이용해주세요.",
+        });
         return;
       }
 
@@ -34,14 +43,28 @@ function FavoriteButton({ item, isLoggedIn, isFavorite, onToggleFavorite, onRemo
       const userId = user?.id;
 
       if (!userId) {
-        alert("사용자의 ID를 찾을 수 없습니다.");
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "사용자의 ID를 찾을 수 없습니다.",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
         return;
       }
 
       const { data: existingFavorites, error: existingFavoritesError } = await supabase.from("favorites").select().eq("userId", userId).eq("animalId", item.ABDM_IDNTFY_NO);
 
       if (existingFavoritesError) {
-        alert("기존 즐겨찾기를 가져오는 중 오류 발생");
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "기존 즐겨찾기를 가져오는 중 오류 발생",
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 3000,
+        });
         return;
       }
 
@@ -49,7 +72,14 @@ function FavoriteButton({ item, isLoggedIn, isFavorite, onToggleFavorite, onRemo
         const { error: deleteError } = await supabase.from("favorites").delete().eq("userId", userId).eq("animalId", item.ABDM_IDNTFY_NO);
 
         if (deleteError) {
-          alert("즐겨찾기 삭제 중 오류 발생");
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "즐겨찾기 삭제 중 오류 발생",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000,
+          });
           return;
         }
         if (onRemoveFavorite) {
@@ -64,12 +94,26 @@ function FavoriteButton({ item, isLoggedIn, isFavorite, onToggleFavorite, onRemo
         });
 
         if (addError) {
-          alert("즐겨찾기 추가 중 오류 발생");
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "즐겨찾기 추가 중 오류 발생",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            timer: 3000,
+          });
           return;
         }
       }
     } catch (error) {
-      alert("즐겨찾기 전환 중 오류 발생");
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "즐겨찾기 전환 중 오류 발생",
+        showConfirmButton: false,
+        timerProgressBar: true,
+        timer: 3000,
+      });
     }
 
     onToggleFavorite(); // 호출해서 상태 변경 요청
