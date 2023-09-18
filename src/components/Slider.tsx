@@ -6,11 +6,14 @@ import PetCard from "./petcards/Petcard";
 import * as S from "../styles/components/style.slider";
 import { FavoritesProvider } from "./favorite/FavoritesContext";
 
+// CustomSliderProps 인터페이스 정의
 interface CustomSliderProps {
   items: Array<AnimalShelter>;
 }
 
+// CustomSlider 컴포넌트 정의
 function CustomSlider({ items }: CustomSliderProps) {
+  // Slick Slider 설정
   const settings = {
     dots: false,
     infinite: true,
@@ -49,8 +52,11 @@ function CustomSlider({ items }: CustomSliderProps) {
 
   return (
     <FavoritesProvider>
+      {/* 슬라이더 컨테이너 */}
       <S.SliderContainer>
+        {/* Slick Slider 컴포넌트 */}
         <S.SliderCard {...settings}>
+          {/* 각 아이템에 대한 PetCard 컴포넌트 렌더링 */}
           {items?.map((item: AnimalShelter) => (
             <div key={item.ABDM_IDNTFY_NO}>
               <PetCard item={item} />

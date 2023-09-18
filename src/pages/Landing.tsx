@@ -9,6 +9,7 @@ import "../styles/style.main.css";
 function Landing() {
   return (
     <FullPage controls controlsProps={{ className: "slide-navigation" }}>
+      {/* 각 슬라이드를 FullPage 컴포넌트 안에 배치 */}
       <Slide>
         <MainSliderIntroduction />
       </Slide>

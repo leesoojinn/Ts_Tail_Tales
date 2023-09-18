@@ -14,22 +14,35 @@ interface CommentProps {
 }
 
 function Comment({ comments: commentsProp }: CommentProps) {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>(); // URL에서 게시물 ID를 가져옵니다.
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [deleted] = useState(false);
-  const queryClient = useQueryClient();
 
-  const { currentPage, setCurrentPage, indexOfLastItem, indexOfFirstItem, itemsPerPage } = usePageHook(5);
+  const queryClient = useQueryClient(); // React Query의 쿼리 클라이언트를 사용하여 쿼리를 관리합니다.
 
+  // 페이지네이션에 필요한 상태와 함수를 가져옵니다.
+  const {
+    currentPage,
+    setCurrentPage,
+    indexOfLastItem,
+    indexOfFirstItem,
+    itemsPerPage,
+  } = usePageHook(5);
+
+  // 댓글 데이터를 가져오는 React Query 훅을 사용합니다
   const {
     data: commentData,
     isLoading,
     isError,
     error,
   } = useQuery(
-    ["comments", id],
+    ["comments", id], // 쿼리 식별자를 지정하여 캐싱 및 재사용을 관리합니다.
     async () => {
-      const { data, error } = await supabase.from("comments").select("*").eq("postId", id).order("date", { ascending: true });
+      const { data, error } = await supabase
+        .from("comments")
+        .select("*")
+        .eq("postId", id) // 해당 게시물의 댓글만 가져옵니다.
+        .order("date", { ascending: true }); // 날짜 순으로 정렬합니다.
 
       if (error) {
         throw error;
@@ -38,10 +51,11 @@ function Comment({ comments: commentsProp }: CommentProps) {
       return data;
     },
     {
-      enabled: !!id,
+      enabled: !!id, // 게시물 ID가 있을 때만 쿼리를 실행합니다.
     }
   );
 
+  // 댓글 삭제 핸들러를 정의
   const handleDelete = async (commentId: string) => {
     const result = await Swal.fire({
       title: "정말 삭제하시겠습니까?",
@@ -55,9 +69,10 @@ function Comment({ comments: commentsProp }: CommentProps) {
 
     if (result.isConfirmed) {
       try {
-        await supabase.from("comments").delete().eq("id", commentId);
-        queryClient.invalidateQueries(["comments", id]);
+        await supabase.from("comments").delete().eq("id", commentId); // 댓글 삭제 요청을 수행합니다.
+        queryClient.invalidateQueries(["comments", id]); // 쿼리를 다시 실행하여 데이터를 업데이트합니다.
       } catch (error) {
+        // 댓글 삭제 중 오류가 발생한 경우 오류 메시지를 표시합니다.
         Swal.fire({
           position: "center",
           icon: "error",
@@ -70,14 +85,16 @@ function Comment({ comments: commentsProp }: CommentProps) {
     }
   };
 
+  // 페이지 변경 핸들러를 정의
   const handlePageChange = (newPage: number): void => {
     setCurrentPage(newPage);
   };
 
+  // 현재 페이지에 표시할 댓글을 가져옵니다.
   const currentComments = commentData?.slice(indexOfFirstItem, indexOfLastItem);
 
   if (isLoading) {
-    return <div>로딩 중 ...</div>;
+    return <div>로딩 중 ...</div>; // 댓글 데이터를 가져오는 중일 때 로딩 화면을 표시합니다.
   }
 
   if (isError) {
@@ -88,16 +105,20 @@ function Comment({ comments: commentsProp }: CommentProps) {
     return <div>게시물을 찾을 수 없습니다.</div>;
   }
 
+  // 현재 로그인한 사용자의 이메일을 가져옵니다.
   const email = sessionStorage.getItem("userEmail")?.toLowerCase();
 
   return (
     <div>
+      {/* 총 댓글 개수를 표시합니다. */}
       <p>{commentData.length}개의 댓글</p>
       <br />
+      {/* 삭제된 댓글인 경우 로딩 메시지를 표시합니다. */}
       {deleted ? (
         <div>로딩 중 ...</div>
       ) : (
         <>
+          {/* 현재 페이지의 댓글을 매핑하여 표시합니다. */}
           {currentComments?.map((comment) => (
             <S.CommentContainer key={comment.id}>
               <div style={{ display: "flex", alignItems: "center" }}>
@@ -110,6 +131,7 @@ function Comment({ comments: commentsProp }: CommentProps) {
                     marginRight: "10px",
                   }}
                 >
+                  {/* 댓글 작성자의 프로필 이미지를 표시합니다. */}
                   <img
                     src={comment.avatar_url || comment.user_profile}
                     alt="User Avatar"
@@ -121,10 +143,18 @@ function Comment({ comments: commentsProp }: CommentProps) {
                   />
                 </div>
                 <div style={{ flex: 1 }}>
-                  {email === comment.email ? <strong style={{ color: "#96908a" }}>{comment.userNickname || "익명"}</strong> : <strong>{comment.userNickname || "익명"}</strong>}
+                  {/* 댓글 작성자의 닉네임을 표시합니다. */}
+                  {email === comment.email ? (
+                    <strong style={{ color: "#96908a" }}>
+                      {comment.userNickname || "익명"}
+                    </strong>
+                  ) : (
+                    <strong>{comment.userNickname || "익명"}</strong>
+                  )}
 
                   <br />
                   <span style={{ color: "gray" }}>
+                    {/* 댓글 작성 일시를 표시합니다. */}
                     {new Date(comment.date).toLocaleString("ko-KR", {
                       year: "numeric",
                       month: "long",
@@ -134,10 +164,17 @@ function Comment({ comments: commentsProp }: CommentProps) {
                     })}
                   </span>
                 </div>
+                {/* 현재 사용자가 댓글 작성자인 경우 수정 및 삭제 버튼을 표시합니다. */}
                 {email === comment.email && (
                   <div style={{ marginLeft: "auto" }}>
-                    <S.EditButton onClick={() => setEditingCommentId(comment.id)}>수정</S.EditButton>
-                    <S.DeleteButton onClick={() => handleDelete(comment.id)}>삭제</S.DeleteButton>
+                    <S.EditButton
+                      onClick={() => setEditingCommentId(comment.id)}
+                    >
+                      수정
+                    </S.EditButton>
+                    <S.DeleteButton onClick={() => handleDelete(comment.id)}>
+                      삭제
+                    </S.DeleteButton>
                   </div>
                 )}
               </div>
@@ -159,7 +196,12 @@ function Comment({ comments: commentsProp }: CommentProps) {
               )}
             </S.CommentContainer>
           ))}
-          <Pagination currentPage={currentPage} totalPages={Math.ceil(commentData.length / itemsPerPage)} setCurrentPage={handlePageChange} />
+          {/* 페이지네이션 컴포넌트를 표시하여 페이지를 변경할 수 있도록 합니다. */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(commentData.length / itemsPerPage)}
+            setCurrentPage={handlePageChange}
+          />
         </>
       )}
     </div>

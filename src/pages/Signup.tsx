@@ -1,21 +1,23 @@
 import React, { useState, FormEvent } from "react";
-import { supabase } from "../supabase";
-import { Link, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
-import * as S from "../styles/pages/style.signup";
+import { supabase } from "../supabase"; // Supabase 모듈 가져오기
+import { Link, useNavigate } from "react-router-dom"; // React Router의 네비게이션과 링크 기능을 사용
+import Swal from "sweetalert2"; // Swal 팝업 메시지를 표시하기 위한 모듈
+import * as S from "../styles/pages/style.signup"; // 스타일 관련 컴포넌트 가져오기
 
 function SignUp() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [nickname, setNickname] = useState("");
-  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [email, setEmail] = useState(""); // 이메일 상태
+  const [password, setPassword] = useState(""); // 비밀번호 상태
+  const [passwordConfirm, setPasswordConfirm] = useState(""); // 비밀번호 확인 상태
+  const [nickname, setNickname] = useState(""); // 닉네임 상태
+  const [profileImage, setProfileImage] = useState<File | null>(null); // 프로필 이미지 파일 상태
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // React Router의 네비게이션 기능을 사용
 
+  // 회원가입 처리 함수
   const signupHandler = async (e: FormEvent) => {
     e.preventDefault();
 
+    // 필수 필드를 모두 입력했는지 검사
     if (!email || !password || !passwordConfirm || !nickname || !profileImage) {
       Swal.fire({
         position: "center",
@@ -28,6 +30,7 @@ function SignUp() {
       return;
     }
 
+    // 비밀번호와 비밀번호 확인이 일치하는지 검사
     if (password !== passwordConfirm) {
       Swal.fire({
         position: "center",
@@ -44,7 +47,7 @@ function SignUp() {
       let imagePath = null;
       if (profileImage) {
         const { data, error } = await supabase.storage
-          .from("image/profiles") //
+          .from("image/profiles") // Supabase 스토리지의 "image/profiles" 경로에 이미지 업로드
           .upload(`${email}/${profileImage.name}`, profileImage);
 
         if (error) {
@@ -55,16 +58,18 @@ function SignUp() {
         imagePath = `https://livvtclsfcwcjiljzxhh.supabase.co/storage/v1/object/public/image/profiles/${email}/${profileImage.name}`;
       }
 
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            user_name: nickname,
-            user_profile: imagePath,
+      // Supabase를 사용하여 사용자 등록
+      const { data: signUpData, error: signUpError } =
+        await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              user_name: nickname,
+              user_profile: imagePath,
+            },
           },
-        },
-      });
+        });
 
       if (signUpError) {
         if (signUpError.message === "User already registered") {
@@ -87,12 +92,15 @@ function SignUp() {
       }
 
       if (signUpData?.user) {
-        const { data: profileData, error: profileError } = await supabase.from("profiles").upsert([
-          {
-            id: signUpData.user.id as string,
-            nickname,
-          },
-        ]);
+        // 프로필 데이터를 업데이트 또는 추가
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .upsert([
+            {
+              id: signUpData.user.id as string,
+              nickname,
+            },
+          ]);
         Swal.fire({
           position: "center",
           icon: "success",
@@ -124,6 +132,7 @@ function SignUp() {
     }
   };
 
+  // 프로필 이미지 선택 시 호출되는 핸들러 함수
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
@@ -146,22 +155,50 @@ function SignUp() {
         <form onSubmit={signupHandler}>
           <div>
             <S.InputLabel className="emailtext">이메일</S.InputLabel>
-            <S.InputBox type="email" id="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <S.InputBox
+              type="email"
+              id="email"
+              placeholder="이메일"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
           <div>
             <S.InputLabel>비밀번호</S.InputLabel>
-            <S.InputBox type="password" id="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <S.InputBox
+              type="password"
+              id="password"
+              placeholder="비밀번호"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
             <br />
-            <S.InputBox type="password" id="passwordConfirm" placeholder="비밀번호 확인" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
+            <S.InputBox
+              type="password"
+              id="passwordConfirm"
+              placeholder="비밀번호 확인"
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+            />
             <p>최소 6자리 이상</p>
           </div>
           <div>
             <S.InputLabel>닉네임</S.InputLabel>
-            <S.InputBox type="text" id="nickname" placeholder="닉네임" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+            <S.InputBox
+              type="text"
+              id="nickname"
+              placeholder="닉네임"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+            />
           </div>
           <div>
             <S.InputLabel>프로필 사진</S.InputLabel>
-            <S.InputBox type="file" accept="image/*" onChange={handleImageChange} />
+            <S.InputBox
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
           </div>
           <S.StButton type="submit">회원가입</S.StButton>
         </form>

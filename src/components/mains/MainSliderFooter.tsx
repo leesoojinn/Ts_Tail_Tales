@@ -2,6 +2,7 @@ import React from "react";
 import * as S from "../../styles/components/mains/style.mainsliderfooter";
 
 function MainSliderFooter() {
+  // 프로필 정보 배열
   const profiles = [
     {
       name: "이수진",

@@ -15,23 +15,32 @@ export default function Create({ postId }: CreateProps) {
   const [content, setContent] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const [userNickname, setUserNickname] = useState<string | null>(null);
-  const queryClient = useQueryClient();
+
+  const queryClient = useQueryClient(); // react-query의 queryClient
   const navigate = useNavigate();
 
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      setUser(JSON.parse(storedUser)); // 저장된 사용자 정보를 가져와 state에 설정
     }
   }, []);
 
+  //컴포넌트가 마운트될 때 사용자 정보를 세션 스토리지에서 가져와 설정합니다.
   useEffect(() => {
     if (user) {
-      setUserNickname(user.user_metadata.user_name || user.user_metadata.full_name);
-      sessionStorage.setItem("userNickname", user.user_metadata.user_name || user.user_metadata.full_name);
+      // 사용자 정보가 존재하면 사용자의 닉네임을 설정하고 세션 스토리지에 저장합니다.
+      setUserNickname(
+        user.user_metadata.user_name || user.user_metadata.full_name
+      );
+      sessionStorage.setItem(
+        "userNickname",
+        user.user_metadata.user_name || user.user_metadata.full_name
+      );
     }
   }, [user]);
 
+  // useMutation을 사용하여 댓글 작성 뮤테이션을 생성합니다.
   const createCommentMutation = useMutation<
     void,
     Error,
@@ -45,8 +54,12 @@ export default function Create({ postId }: CreateProps) {
     }
   >(async (newComment) => {
     try {
-      const { data, error } = await supabase.from("comments").insert([newComment]);
+      // Supabase를 통해 댓글을 데이터베이스에 삽입합니다.
+      const { data, error } = await supabase
+        .from("comments")
+        .insert([newComment]);
       if (error) {
+        // 오류가 발생하면 오류 메시지를 표시하고 예외를 throw합니다.
         Swal.fire({
           position: "center",
           icon: "error",
@@ -59,6 +72,7 @@ export default function Create({ postId }: CreateProps) {
       }
       return;
     } catch (error) {
+      // 댓글 작성 중 예외가 발생하면 오류 메시지를 표시하고 예외를 throw합니다.
       Swal.fire({
         position: "center",
         icon: "error",
@@ -71,8 +85,10 @@ export default function Create({ postId }: CreateProps) {
     }
   });
 
+  // handleSubmit 함수는 댓글 작성 폼 제출 시 호출됩니다.
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // 로그인하지 않은 상태에서 댓글 작성을 시도한 경우 경고 메시지를 표시하고 로그인 페이지로 이동합니다.
     if (!user) {
       Swal.fire({
         icon: "warning",
@@ -84,6 +100,7 @@ export default function Create({ postId }: CreateProps) {
       });
       return;
     }
+    // 댓글 내용이 없는 경우 경고 메시지를 표시합니다.
     if (!content) {
       Swal.fire({
         position: "center",
@@ -95,6 +112,8 @@ export default function Create({ postId }: CreateProps) {
       });
       return;
     }
+
+    // 새 댓글 객체를 생성하고 뮤테이션을 호출하여 댓글을 데이터베이스에 추가합니다.
     const newComment = {
       id: uuid(),
       postId,
@@ -102,10 +121,12 @@ export default function Create({ postId }: CreateProps) {
       userNickname: userNickname || user?.user_metadata.full_name,
       date: new Date().toISOString().slice(0, 19).replace("T", " "),
       email: user!.email,
-      avatar_url: user?.user_metadata.user_profile || user?.user_metadata.avatar_url,
+      avatar_url:
+        user?.user_metadata.user_profile || user?.user_metadata.avatar_url,
     };
     createCommentMutation.mutate(newComment, {
       onSuccess: () => {
+        // 댓글 작성이 성공하면 성공 메시지를 표시하고 입력 내용을 초기화하고 쿼리를 재로드합니다.
         Swal.fire({
           position: "center",
           icon: "success",
@@ -129,11 +150,16 @@ export default function Create({ postId }: CreateProps) {
       },
     });
   };
+
   return (
     <S.CreateContainer>
       <S.CreateForm onSubmit={handleSubmit}>
         <S.InputContainer>
-          <S.CreateTextarea placeholder="댓글을 입력하세요" value={content} onChange={(e) => setContent(e.target.value)} />
+          <S.CreateTextarea
+            placeholder="댓글을 입력하세요"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
           <S.CreateButton type="submit">작성</S.CreateButton>
         </S.InputContainer>
       </S.CreateForm>

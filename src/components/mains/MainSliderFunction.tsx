@@ -6,29 +6,30 @@ import * as S from "../../styles/components/mains/style.mainsliderfuntion";
 
 function MainSliderFunction() {
   const location = useLocation();
-  const [showImages, setShowImages] = useState(false);
-  const containerRef = useRef(null);
+  const [showImages, setShowImages] = useState(false); // 이미지를 보여줄지 여부를 관리하는 상태
+
+  const containerRef = useRef(null); // 이미지를 감싸는 컨테이너 요소의 ref
   const navigate = useNavigate();
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          setShowImages(true);
+          setShowImages(true); // 이미지가 화면에 나타나면 showImages 상태를 true로 설정
         } else {
-          setShowImages(false);
+          setShowImages(false); // 이미지가 화면에 나타나지 않으면 showImages 상태를 false로 설정
         }
       });
     });
 
     if (containerRef.current) {
-      observer.observe(containerRef.current);
+      observer.observe(containerRef.current); // 컨테이너 요소를 감시하여 이미지가 화면에 나타나는지 감지
     }
 
     return () => {
       setShowImages(false);
     };
-  }, [location.pathname]);
+  }, [location.pathname]); // 경로가 변경될 때마다 useEffect가 재실행되도록 함
 
   return (
     <S.Container ref={containerRef}>
